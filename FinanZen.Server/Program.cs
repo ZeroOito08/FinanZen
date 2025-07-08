@@ -1,21 +1,21 @@
+using BCrypt.Net;
 using EFCore.NamingConventions;
 using FinanZen.Server.Data;
 using FinanZen.Server.Models;
-using FinanZen.Server.Models.DTOs; // Adicionado para usar nosso DTO
+using FinanZen.Server.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Configuração do Banco de Dados
+// --- Configuração dos Serviços ---
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
     .UseSnakeCaseNamingConvention());
 
-// 2. Configurações de Serviços Essenciais
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors();
+builder.Services.AddAuthorization();
 
-// 3. Configuração do Swagger
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -26,16 +26,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// ==========================================================
-// VVV CORREÇÃO ADICIONADA AQUI VVV
-// Registra os serviços de autorização necessários.
-builder.Services.AddAuthorization();
-// ==========================================================
-
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- Configuração do Pipeline de Requisições ---
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
@@ -46,7 +39,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors(policy => policy
     .AllowAnyOrigin()
     .AllowAnyMethod()
@@ -55,7 +47,7 @@ app.UseCors(policy => policy
 app.UseAuthorization();
 
 // ==========================================================
-// ENDPOINTS FINAIS DA API (usando Minimal APIs e DTOs)
+// ENDPOINTS FINAIS DA API
 // ==========================================================
 
 // Endpoints para Categorias
@@ -64,11 +56,18 @@ app.MapGet("/api/categorias", async (ApplicationDbContext context) =>
     return await context.Categorias.ToListAsync();
 });
 
-app.MapPost("/api/categorias", async (Categoria categoria, ApplicationDbContext context) =>
+// Corrigido para usar DTO
+app.MapPost("/api/categorias", async (CreateCategoriaDTO categoriaDTO, ApplicationDbContext context) =>
 {
-    context.Categorias.Add(categoria);
+    var novaCategoria = new Categoria
+    {
+        Nome = categoriaDTO.Nome,
+        Tipo = categoriaDTO.Tipo,
+        UsuarioID = categoriaDTO.UsuarioID
+    };
+    context.Categorias.Add(novaCategoria);
     await context.SaveChangesAsync();
-    return Results.Created($"/api/categorias/{categoria.CategoriaID}", categoria);
+    return Results.Created($"/api/categorias/{novaCategoria.CategoriaID}", novaCategoria);
 });
 
 // Endpoints para Transações
@@ -77,7 +76,7 @@ app.MapGet("/api/transacoes", async (ApplicationDbContext context) =>
     return await context.Transacoes.ToListAsync();
 });
 
-// Endpoint corrigido para usar o DTO
+// Corrigido para usar DTO
 app.MapPost("/api/transacoes", async (CreateTransacaoDTO transacaoDTO, ApplicationDbContext context) =>
 {
     var novaTransacao = new Transacao
@@ -100,12 +99,23 @@ app.MapGet("/api/usuarios", async (ApplicationDbContext context) =>
     return await context.Usuarios.ToListAsync();
 });
 
-app.MapPost("/api/usuarios", async (Usuario usuario, ApplicationDbContext context) =>
+// Corrigido para usar DTO e sem duplicatas
+app.MapPost("/api/usuarios", async (CreateUsuarioDTO usuarioDTO, ApplicationDbContext context) =>
 {
-    context.Usuarios.Add(usuario);
+    var novoUsuario = new Usuario
+    {
+        Nome = usuarioDTO.Nome,
+        Email = usuarioDTO.Email,
+        SenhaHash = BCrypt.Net.BCrypt.HashPassword(usuarioDTO.Senha)
+    };
+
+    context.Usuarios.Add(novoUsuario);
     await context.SaveChangesAsync();
-    return Results.Created($"/api/usuarios/{usuario.UsuarioID}", usuario);
+
+    novoUsuario.SenhaHash = "";
+    return Results.Created($"/api/usuarios/{novoUsuario.UsuarioID}", novoUsuario);
 });
+
 
 app.MapFallbackToFile("/index.html");
 

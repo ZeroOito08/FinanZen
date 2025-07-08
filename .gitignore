@@ -1,0 +1,20 @@
+# Compiled output
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio temporary files
+.vs/
+*.user
+*.suo
+
+# Node.js dependencies
+node_modules/
+
+# Build results
+[Dd]ist/
+
+# Log files
+*.log
+
+# Secrets - NUNCA ENVIE ARQUIVOS COM SENHAS
+appsettings.Development.json

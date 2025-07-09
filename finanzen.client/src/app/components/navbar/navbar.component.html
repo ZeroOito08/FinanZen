@@ -6,5 +6,8 @@
     <a routerLink="/transacoes">Nova Transação</a>
     <a routerLink="/minhas-transacoes">Minhas Transações</a>
     <button (click)="logout()">Sair</button>
+    <button (click)="toggleTheme()">
+        {{ isDarkMode ? '☀️' : '🌙' }}
+    </button>
   </div>
 </nav>

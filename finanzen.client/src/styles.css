@@ -4,6 +4,26 @@
 /* Importa uma fonte mais moderna do Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
+/* TEMA CLARO (PADRÃO) */
+[data-theme="light"] {
+  --cor-fundo: #f4f7f6;
+  --cor-surface: #ffffff; /* Cor de fundo para cards, menus, etc. */
+  --cor-texto-primaria: #0e1012;
+  --cor-texto-secundaria: #5c677d;
+  --cor-borda: #dee2e6;
+  --cor-primaria: #007bff;
+}
+
+/* TEMA ESCURO */
+[data-theme="dark"] {
+  --cor-fundo: #121212;
+  --cor-surface: #1e1e1e;
+  --cor-texto-primaria: #e1e1e1;
+  --cor-texto-secundaria: #a8a8a8;
+  --cor-borda: #333333;
+  --cor-primaria: #0d8eff;
+}
+
 /* Define variáveis de cor para fácil reutilização */
 :root {
   --cor-primaria: #007bff;
@@ -18,5 +38,11 @@ body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
   background-color: var(--cor-fundo);
-  color: var(--cor-texto);
+  color: var(--cor-texto-primaria);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Estilo para links globais */
+a {
+  color: var(--cor-primaria);
 }

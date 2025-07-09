@@ -1,1 +1,7 @@
-﻿<app-transaction-form></app-transaction-form>
+﻿<app-navbar *ngIf="showNavbar"></app-navbar>
+
+<main>
+  <div class="main-container">
+    <router-outlet></router-outlet>
+  </div>
+</main>

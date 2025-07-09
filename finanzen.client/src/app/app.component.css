@@ -12,3 +12,10 @@ th, td {
 table {
     margin: 0 auto;
 }
+
+
+.main-container {
+  max-width: 1200px;
+  margin: 2rem auto; /* 2rem de margem no topo/baixo, auto nas laterais para centralizar */
+  padding: 0 1rem;
+}

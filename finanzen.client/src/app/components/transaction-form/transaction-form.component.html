@@ -1,15 +1,14 @@
 <h2>Nova Transação</h2>
 
 <form #transactionForm="ngForm" (ngSubmit)="onSubmit()">
-
   <div>
     <label for="descricao">Descrição:</label>
-    <input type="text" id="descricao" name="descricao" placeholder="Ex: Salário, Aluguel..." [(ngModel)]="model.descricao" required>
+    <input type="text" id="descricao" name="descricao" [(ngModel)]="model.descricao" required>
   </div>
 
   <div>
     <label for="valor">Valor (R$):</label>
-    <input type="number" id="valor" name="valor" placeholder="150.50" [(ngModel)]="model.valor" required>
+    <input type="number" id="valor" name="valor" [(ngModel)]="model.valor" required>
   </div>
 
   <div>
@@ -17,6 +16,14 @@
     <input type="date" id="data" name="data" [(ngModel)]="model.data" required>
   </div>
 
+  <div>
+    <label for="categoria">Categoria:</label>
+    <select id="categoria" name="categoriaId" [(ngModel)]="model.categoriaId" required>
+      <option [ngValue]="null" disabled>Selecione uma categoria</option>
+      <option *ngFor="let categoria of categorias" [value]="categoria.categoriaID">
+        {{ categoria.nome }}
+      </option>
+    </select>
+  </div>
   <button type="submit" [disabled]="!transactionForm.form.valid">Salvar Transação</button>
-
 </form>

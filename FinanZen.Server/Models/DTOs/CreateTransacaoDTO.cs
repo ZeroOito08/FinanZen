@@ -1,5 +1,4 @@
-﻿// Models/DTOs/CreateTransacaoDTO.cs
-namespace FinanZen.Server.Models.DTOs
+﻿namespace FinanZen.Server.Models.DTOs
 {
     public class CreateTransacaoDTO
     {

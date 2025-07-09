@@ -1,5 +1,4 @@
-﻿// Pasta: Models/DTOs/CreateCategoriaDTO.cs
-namespace FinanZen.Server.Models.DTOs
+﻿namespace FinanZen.Server.Models.DTOs
 {
     public class CreateCategoriaDTO
     {

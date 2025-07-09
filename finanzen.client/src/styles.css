@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+/* src/styles.css */
+
+/* Importa uma fonte mais moderna do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Define variáveis de cor para fácil reutilização */
+:root {
+  --cor-primaria: #007bff;
+  --cor-sucesso: #28a745;
+  --cor-perigo: #dc3545;
+  --cor-fundo: #f4f7f6;
+  --cor-texto: #333;
+  --cor-borda: #dee2e6;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+}

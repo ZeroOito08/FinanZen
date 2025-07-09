@@ -1,0 +1,31 @@
+.summary-cards {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 8px;
+  color: white;
+  width: 220px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+}
+
+.card p {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+.card-receitas { background-color: #28a745; }
+.card-despesas { background-color: #dc3545; }
+.card-saldo { background-color: #007bff; }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { NotificationService } from '../../services/notification.service'; // IMPORTAR
 
 @Component({
   selector: 'app-transaction-form',
@@ -8,18 +9,22 @@ import { Router } from '@angular/router';
   styleUrls: ['./transaction-form.component.css']
 })
 export class TransactionFormComponent implements OnInit {
-
   public categorias: any[] = [];
   model: any = {};
   isEditMode = false;
 
-  constructor(private http: HttpClient, private router: Router) {
+  // INJETAR O NOVO SERVIÇO
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private notification: NotificationService
+  ) {
+    // ... (lógica do construtor continua a mesma)
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { transacaoData: any };
     if (state?.transacaoData) {
       this.isEditMode = true;
-      this.model = { ...state.transacaoData }; // Clona o objeto
-      // Converte a data para o formato YYYY-MM-DD que o input[type=date] espera
+      this.model = { ...state.transacaoData };
       this.model.data = new Date(this.model.data).toISOString().split('T')[0];
     }
   }
@@ -34,29 +39,27 @@ export class TransactionFormComponent implements OnInit {
   carregarCategorias(): void {
     this.http.get<any[]>('/api/categorias').subscribe({
       next: (data) => { this.categorias = data; },
-      error: (err) => { alert('Falha ao carregar categorias.'); }
+      error: (err) => { this.notification.showError('Falha ao carregar categorias.'); } // USAR O SERVIÇO
     });
   }
 
   onSubmit() {
     if (this.isEditMode) {
-      // Chama o endpoint PUT para atualizar
       this.http.put(`/api/transacoes/${this.model.transacaoID}`, this.model).subscribe({
         next: () => {
-          alert('Transação atualizada com sucesso!');
+          this.notification.showSuccess('Transação atualizada com sucesso!'); // USAR O SERVIÇO
           this.router.navigate(['/minhas-transacoes']);
         },
-        error: (err) => alert('Falha ao atualizar a transação.')
+        error: (err) => this.notification.showError('Falha ao atualizar a transação.') // USAR O SERVIÇO
       });
     } else {
-      // Chama o endpoint POST para criar
       const payload = { ...this.model, usuarioId: 1 };
       this.http.post('/api/transacoes', payload).subscribe({
         next: () => {
-          alert('Transação salva com sucesso!');
+          this.notification.showSuccess('Transação salva com sucesso!'); // USAR O SERVIÇO
           this.router.navigate(['/minhas-transacoes']);
         },
-        error: (err) => alert('Erro ao salvar transação.')
+        error: (err) => this.notification.showError('Erro ao salvar transação.') // USAR O SERVIÇO
       });
     }
   }

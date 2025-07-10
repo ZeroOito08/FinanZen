@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { NotificationService } from '../../services/notification.service'; // IMPORTAR
 
 @Component({
   selector: 'app-register',
@@ -10,10 +11,14 @@ import { Router } from '@angular/router';
 export class RegisterComponent {
   registerModel: any = {};
 
-  constructor(private http: HttpClient, private router: Router) { }
+  // INJETAR O NOVO SERVIÇO
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private notification: NotificationService
+  ) { }
 
   onRegister() {
-    // Nosso DTO no backend espera 'nome', 'email' e 'senha'
     const payload = {
       nome: this.registerModel.nome,
       email: this.registerModel.email,
@@ -22,13 +27,11 @@ export class RegisterComponent {
 
     this.http.post('/api/usuarios', payload).subscribe({
       next: (response) => {
-        alert('Usuário cadastrado com sucesso! Por favor, faça o login.');
-        this.router.navigate(['/login']); // Redireciona para o login após o sucesso
+        this.notification.showSuccess('Usuário cadastrado com sucesso! Por favor, faça o login.'); // USAR O SERVIÇO
+        this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error('Erro no cadastro', err);
-        // Idealmente, trataríamos erros específicos, como email já existente
-        alert('Ocorreu um erro ao tentar cadastrar.');
+        this.notification.showError('Ocorreu um erro ao tentar cadastrar.'); // USAR O SERVIÇO
       }
     });
   }

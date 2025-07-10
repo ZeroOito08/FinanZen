@@ -10,10 +10,11 @@ using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Configuração dos Serviços ---
+// --- Service Configuration ---
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
     .UseSnakeCaseNamingConvention());
@@ -40,30 +41,14 @@ builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "FinanZen API" });
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Description = "Por favor, insira 'Bearer ' seguido do seu token",
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-            },
-            new string[]{}
-        }
-    });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme { In = ParameterLocation.Header, Description = "Please enter 'Bearer ' followed by your token", Name = "Authorization", Type = SecuritySchemeType.ApiKey, Scheme = "Bearer" });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement { { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }, new string[] { } } });
 });
 
 
 var app = builder.Build();
 
-// --- Configuração do Pipeline de Requisições ---
+// --- Request Pipeline Configuration ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -75,84 +60,25 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // ==========================================================
-// ENDPOINTS DA API
+// API ENDPOINTS
 // ==========================================================
 
-// --- Endpoint de Login ---
+#region Authentication Endpoints
 app.MapPost("/api/login", async (LoginDTO loginDTO, ApplicationDbContext context, IConfiguration config) =>
 {
     var usuario = await context.Usuarios.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
-    if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Senha, usuario.SenhaHash))
-    {
-        return Results.Unauthorized();
-    }
+    if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Senha, usuario.SenhaHash)) return Results.Unauthorized();
+
     var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
     var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-    var claims = new[]
-    {
-        new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuarioID.ToString()),
-        new Claim(JwtRegisteredClaimNames.Email, usuario.Email!),
-        new Claim(JwtRegisteredClaimNames.Name, usuario.Nome!),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
-    var token = new JwtSecurityToken(
-        issuer: config["Jwt:Issuer"],
-        audience: config["Jwt:Audience"],
-        claims: claims,
-        expires: DateTime.Now.AddHours(8),
-        signingCredentials: credentials);
-    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-    return Results.Ok(new { Token = tokenString });
+    var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuarioID.ToString()), new Claim(JwtRegisteredClaimNames.Email, usuario.Email!), new Claim(JwtRegisteredClaimNames.Name, usuario.Nome!) };
+    var token = new JwtSecurityToken(issuer: config["Jwt:Issuer"], audience: config["Jwt:Audience"], claims: claims, expires: DateTime.Now.AddHours(8), signingCredentials: credentials);
+
+    return Results.Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });
 });
+#endregion
 
-// --- Endpoint para Dashboard ---
-app.MapGet("/api/dashboard/resumo", async (HttpContext httpContext, ApplicationDbContext context) =>
-{
-    var userIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-    if (userIdClaim == null) return Results.Unauthorized();
-    var userId = int.Parse(userIdClaim.Value);
-    var hoje = DateTime.UtcNow;
-    var primeiroDiaDoMes = new DateOnly(hoje.Year, hoje.Month, 1);
-    var ultimoDiaDoMes = primeiroDiaDoMes.AddMonths(1).AddDays(-1);
-    var transacoesDoMes = await context.Transacoes
-        .Where(t => t.UsuarioID == userId && t.Data >= primeiroDiaDoMes && t.Data <= ultimoDiaDoMes)
-        .Include(t => t.Categoria)
-        .ToListAsync();
-    var totalReceitas = transacoesDoMes.Where(t => t.Categoria?.Tipo == "Receita").Sum(t => t.Valor);
-    var totalDespesas = transacoesDoMes.Where(t => t.Categoria?.Tipo == "Despesa").Sum(t => t.Valor);
-    var resumo = new ResumoFinanceiroDTO { TotalReceitas = totalReceitas, TotalDespesas = totalDespesas, Saldo = totalReceitas - totalDespesas };
-    return Results.Ok(resumo);
-}).RequireAuthorization();
-
-// Adicione este novo endpoint de dashboard
-app.MapGet("/api/dashboard/despesas-por-categoria", async (HttpContext httpContext, ApplicationDbContext context) =>
-{
-    var userIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-    if (userIdClaim == null) return Results.Unauthorized();
-    var userId = int.Parse(userIdClaim.Value);
-
-    var hoje = DateTime.UtcNow;
-    var primeiroDiaDoMes = new DateOnly(hoje.Year, hoje.Month, 1);
-    var ultimoDiaDoMes = primeiroDiaDoMes.AddMonths(1).AddDays(-1);
-
-    var dadosGrafico = await context.Transacoes
-        .Where(t => t.UsuarioID == userId &&
-                    t.Data >= primeiroDiaDoMes &&
-                    t.Data <= ultimoDiaDoMes &&
-                    t.Categoria != null &&
-                    t.Categoria.Tipo == "Despesa")
-        .GroupBy(t => t.Categoria!.Nome)
-        .Select(g => new { Categoria = g.Key, Total = g.Sum(t => t.Valor) })
-        .ToListAsync();
-
-    return Results.Ok(dadosGrafico);
-
-}).RequireAuthorization();
-
-// --- Endpoints para Usuários ---
-app.MapGet("/api/usuarios", async (ApplicationDbContext context) => await context.Usuarios.ToListAsync())
-   .RequireAuthorization();
-
+#region User Endpoints
 app.MapPost("/api/usuarios", async (CreateUsuarioDTO usuarioDTO, ApplicationDbContext context) =>
 {
     var novoUsuario = new Usuario { Nome = usuarioDTO.Nome, Email = usuarioDTO.Email, SenhaHash = BCrypt.Net.BCrypt.HashPassword(usuarioDTO.Senha) };
@@ -161,48 +87,80 @@ app.MapPost("/api/usuarios", async (CreateUsuarioDTO usuarioDTO, ApplicationDbCo
     novoUsuario.SenhaHash = "";
     return Results.Created($"/api/usuarios/{novoUsuario.UsuarioID}", novoUsuario);
 });
+#endregion
 
-// --- Endpoints para Categorias ---
-app.MapGet("/api/categorias", async (ApplicationDbContext context) => await context.Categorias.ToListAsync())
-   .RequireAuthorization();
-
-app.MapPost("/api/categorias", async (CreateCategoriaDTO categoriaDTO, ApplicationDbContext context) =>
+#region Category Endpoints
+app.MapGet("/api/categorias", async (HttpContext httpContext, ApplicationDbContext context) =>
 {
-    var novaCategoria = new Categoria { Nome = categoriaDTO.Nome, Tipo = categoriaDTO.Tipo, UsuarioID = categoriaDTO.UsuarioID };
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    return Results.Ok(await context.Categorias.Where(c => c.UsuarioID == userId || c.UsuarioID == null).ToListAsync());
+}).RequireAuthorization();
+
+app.MapPost("/api/categorias", async (CreateCategoriaDTO categoriaDTO, HttpContext httpContext, ApplicationDbContext context) =>
+{
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    var novaCategoria = new Categoria { Nome = categoriaDTO.Nome, Tipo = categoriaDTO.Tipo, UsuarioID = userId };
     context.Categorias.Add(novaCategoria);
     await context.SaveChangesAsync();
     return Results.Created($"/api/categorias/{novaCategoria.CategoriaID}", novaCategoria);
 }).RequireAuthorization();
 
-// --- Endpoints para Transações ---
-app.MapGet("/api/transacoes", async (HttpContext httpContext, ApplicationDbContext context) =>
+app.MapPut("/api/categorias/{id}", async (int id, CreateCategoriaDTO categoriaDTO, HttpContext httpContext, ApplicationDbContext context) =>
 {
-    var userIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-    if (userIdClaim == null) return Results.Unauthorized();
-    var userId = int.Parse(userIdClaim.Value);
-    var transacoes = await context.Transacoes
-        .Where(t => t.UsuarioID == userId)
-        .Include(t => t.Categoria)
-        .Select(t => new TransacaoDetalhesDTO { TransacaoID = t.TransacaoID, Descricao = t.Descricao, Valor = t.Valor, Data = t.Data, UsuarioID = t.UsuarioID, CategoriaID = t.CategoriaID, CategoriaNome = t.Categoria != null ? t.Categoria.Nome : null })
-        .ToListAsync();
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    var categoriaDb = await context.Categorias.FirstOrDefaultAsync(c => c.CategoriaID == id && c.UsuarioID == userId);
+    if (categoriaDb == null) return Results.NotFound();
+
+    categoriaDb.Nome = categoriaDTO.Nome;
+    categoriaDb.Tipo = categoriaDTO.Tipo;
+    await context.SaveChangesAsync();
+    return Results.Ok(categoriaDb);
+}).RequireAuthorization();
+
+app.MapDelete("/api/categorias/{id}", async (int id, HttpContext httpContext, ApplicationDbContext context) =>
+{
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    var categoria = await context.Categorias.FirstOrDefaultAsync(c => c.CategoriaID == id && c.UsuarioID == userId);
+    if (categoria == null) return Results.NotFound();
+
+    var isUsed = await context.Transacoes.AnyAsync(t => t.CategoriaID == id && t.UsuarioID == userId);
+    if (isUsed) return Results.BadRequest("Category is in use and cannot be deleted.");
+
+    context.Categorias.Remove(categoria);
+    await context.SaveChangesAsync();
+    return Results.NoContent();
+}).RequireAuthorization();
+#endregion
+
+#region Transaction Endpoints
+app.MapGet("/api/transacoes", async (HttpContext httpContext, ApplicationDbContext context, [FromQuery] DateOnly? dataInicio, [FromQuery] DateOnly? dataFim) =>
+{
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    var query = context.Transacoes.Where(t => t.UsuarioID == userId);
+    if (dataInicio.HasValue) query = query.Where(t => t.Data >= dataInicio.Value);
+    if (dataFim.HasValue) query = query.Where(t => t.Data <= dataFim.Value);
+
+    var transacoes = await query.Include(t => t.Categoria)
+        .Select(t => new TransacaoDetalhesDTO { TransacaoID = t.TransacaoID, Descricao = t.Descricao, Valor = t.Valor, Data = t.Data, UsuarioID = t.UsuarioID, CategoriaID = t.CategoriaID, CategoriaNome = t.Categoria != null ? t.Categoria.Nome : null, Tipo = t.Categoria != null ? t.Categoria.Tipo : null })
+        .OrderByDescending(t => t.Data).ToListAsync();
     return Results.Ok(transacoes);
 }).RequireAuthorization();
 
 app.MapPost("/api/transacoes", async (CreateTransacaoDTO transacaoDTO, HttpContext httpContext, ApplicationDbContext context) =>
 {
-    var userIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-    if (userIdClaim == null) return Results.Unauthorized();
-    var userId = int.Parse(userIdClaim.Value);
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
     var novaTransacao = new Transacao { Descricao = transacaoDTO.Descricao, Valor = transacaoDTO.Valor, Data = transacaoDTO.Data, UsuarioID = userId, CategoriaID = transacaoDTO.CategoriaID };
     context.Transacoes.Add(novaTransacao);
     await context.SaveChangesAsync();
     return Results.Created($"/api/transacoes/{novaTransacao.TransacaoID}", novaTransacao);
 }).RequireAuthorization();
 
-app.MapPut("/api/transacoes/{id}", async (int id, CreateTransacaoDTO transacaoAtualizada, ApplicationDbContext context) =>
+app.MapPut("/api/transacoes/{id}", async (int id, CreateTransacaoDTO transacaoAtualizada, HttpContext httpContext, ApplicationDbContext context) =>
 {
-    var transacao = await context.Transacoes.FindAsync(id);
-    if (transacao is null) { return Results.NotFound("Transação não encontrada."); }
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    var transacao = await context.Transacoes.FirstOrDefaultAsync(t => t.TransacaoID == id && t.UsuarioID == userId);
+    if (transacao is null) return Results.NotFound();
+
     transacao.Descricao = transacaoAtualizada.Descricao;
     transacao.Valor = transacaoAtualizada.Valor;
     transacao.Data = transacaoAtualizada.Data;
@@ -211,14 +169,41 @@ app.MapPut("/api/transacoes/{id}", async (int id, CreateTransacaoDTO transacaoAt
     return Results.Ok(transacao);
 }).RequireAuthorization();
 
-app.MapDelete("/api/transacoes/{id}", async (int id, ApplicationDbContext context) =>
+app.MapDelete("/api/transacoes/{id}", async (int id, HttpContext httpContext, ApplicationDbContext context) =>
 {
-    var transacao = await context.Transacoes.FindAsync(id);
-    if (transacao is null) { return Results.NotFound(); }
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    var transacao = await context.Transacoes.FirstOrDefaultAsync(t => t.TransacaoID == id && t.UsuarioID == userId);
+    if (transacao is null) return Results.NotFound();
     context.Transacoes.Remove(transacao);
     await context.SaveChangesAsync();
     return Results.NoContent();
 }).RequireAuthorization();
+#endregion
+
+#region Dashboard Endpoints
+app.MapGet("/api/dashboard/resumo", async (HttpContext httpContext, ApplicationDbContext context) =>
+{
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    var hoje = DateTime.UtcNow;
+    var primeiroDiaDoMes = new DateOnly(hoje.Year, hoje.Month, 1);
+    var ultimoDiaDoMes = primeiroDiaDoMes.AddMonths(1).AddDays(-1);
+    var transacoesDoMes = await context.Transacoes.Where(t => t.UsuarioID == userId && t.Data >= primeiroDiaDoMes && t.Data <= ultimoDiaDoMes).Include(t => t.Categoria).ToListAsync();
+    var totalReceitas = transacoesDoMes.Where(t => t.Categoria?.Tipo == "Receita").Sum(t => t.Valor);
+    var totalDespesas = transacoesDoMes.Where(t => t.Categoria?.Tipo == "Despesa").Sum(t => t.Valor);
+    var resumo = new ResumoFinanceiroDTO { TotalReceitas = totalReceitas, TotalDespesas = totalDespesas, Saldo = totalReceitas - totalDespesas };
+    return Results.Ok(resumo);
+}).RequireAuthorization();
+
+app.MapGet("/api/dashboard/despesas-por-categoria", async (HttpContext httpContext, ApplicationDbContext context) =>
+{
+    var userId = int.Parse(httpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    var hoje = DateTime.UtcNow;
+    var primeiroDiaDoMes = new DateOnly(hoje.Year, hoje.Month, 1);
+    var ultimoDiaDoMes = primeiroDiaDoMes.AddMonths(1).AddDays(-1);
+    var dadosGrafico = await context.Transacoes.Where(t => t.UsuarioID == userId && t.Data >= primeiroDiaDoMes && t.Data <= ultimoDiaDoMes && t.Categoria != null && t.Categoria.Tipo == "Despesa").GroupBy(t => t.Categoria!.Nome).Select(g => new { Categoria = g.Key, Total = g.Sum(t => t.Valor) }).ToListAsync();
+    return Results.Ok(dadosGrafico);
+}).RequireAuthorization();
+#endregion
 
 
 app.MapFallbackToFile("/index.html");

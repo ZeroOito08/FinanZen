@@ -5,5 +5,6 @@ export interface TransacaoDetalhes {
     valor: number;
     data: string;
     categoriaID: number;
-    categoriaNome?: string; // O '?' indica que pode ser opcional
+    categoriaNome?: string;
+    tipo?: 'Receita' | 'Despesa';
 }

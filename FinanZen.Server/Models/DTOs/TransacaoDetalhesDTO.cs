@@ -9,6 +9,7 @@ namespace FinanZen.Server.Models.DTOs
         public DateOnly Data { get; set; }
         public int UsuarioID { get; set; }
         public int CategoriaID { get; set; }
-        public string? CategoriaNome { get; set; } // Propriedade para o nome da categoria
+        public string? CategoriaNome { get; set; }
+        public string? Tipo { get; set; }
     }
 }

@@ -1,0 +1,41 @@
+<div class="list-container">
+  <h2>Gerir Categorias</h2>
+
+  <div class="toolbar">
+    <button class="btn-primary" (click)="abrirModal()">Adicionar Nova Categoria</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Tipo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="categorias.length === 0">
+        <td colspan="3">Nenhuma categoria encontrada.</td>
+      </tr>
+      <tr *ngFor="let categoria of categorias">
+        <td>{{ categoria.nome }}</td>
+        <td>
+          <span class="badge" [ngClass]="categoria.tipo === 'Receita' ? 'badge-receita' : 'badge-despesa'">
+            {{ categoria.tipo }}
+          </span>
+        </td>
+        <td>
+          <button class="btn btn-secondary" (click)="abrirModal(categoria)">Editar</button>
+          <button class="btn btn-danger" (click)="deletarCategoria(categoria.categoriaID)">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<app-category-form 
+  *ngIf="mostrarModal" 
+  [categoriaParaEditar]="categoriaSelecionada"
+  (fechar)="fecharModal()" 
+  (salvar)="salvarCategoria($event)">
+</app-category-form>

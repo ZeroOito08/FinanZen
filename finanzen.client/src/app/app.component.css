@@ -1,21 +1,15 @@
-﻿:host {
-    max-width: 1280px;
-    padding: 2rem;
-    text-align: center;
+﻿.app-layout {
+  display: flex;
+  min-height: 100vh;
 }
 
-th, td {
-    padding-left: 1rem;
-    padding-right: 1rem;
+.app-sidebar {
+  width: 250px; /* Largura fixa para o menu lateral */
+  flex-shrink: 0; /* Impede que o menu encolha */
 }
 
-table {
-    margin: 0 auto;
-}
-
-
-.main-container {
-  max-width: 1200px;
-  margin: 2rem auto; /* 2rem de margem no topo/baixo, auto nas laterais para centralizar */
-  padding: 0 1rem;
+.app-content {
+  flex-grow: 1; /* Faz a área de conteúdo ocupar o resto do espaço */
+  padding: 2rem 3rem;
+  overflow-y: auto; /* Adiciona scroll se o conteúdo for grande */
 }

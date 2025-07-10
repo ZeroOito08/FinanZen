@@ -1,40 +1,86 @@
-.navbar {
+:host {
+  display: block;
+  height: 100%;
+}
+
+.sidebar-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: white;
-  padding: 0 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex-direction: column;
+  height: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid var(--glass-border);
+  padding: 1.5rem 1rem;
+  box-sizing: border-box; /* Garante que o padding não aumente o tamanho total */
 }
 
-.navbar-brand a {
-  font-weight: 600;
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.logo-icon {
+  font-size: 2.5rem;
+}
+
+.sidebar-header h3 {
+  margin: 0.5rem 0 0;
+  color: var(--text-primary);
   font-size: 1.5rem;
-  color: var(--cor-primaria);
-  text-decoration: none;
 }
 
-.navbar-links a, .navbar-links button {
-  margin-left: 1.5rem;
+.sidebar-nav {
+  flex-grow: 1; /* Faz a navegação ocupar o espaço disponível */
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.5rem;
   text-decoration: none;
-  color: var(--cor-texto);
+  color: var(--text-secondary);
+  border-radius: 8px;
   font-weight: 500;
-  padding: 8px 12px;
-  border-radius: 5px;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.navbar-links a:hover {
-  background-color: #f0f0f0;
+.sidebar-nav a:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
 }
 
-.navbar-links button {
-  background-color: var(--cor-perigo);
+.sidebar-nav a.active {
+  background-color: var(--accent-color);
   color: white;
-  border: none;
-  cursor: pointer;
+  font-weight: 600;
 }
 
-.navbar-links button:hover {
-  opacity: 0.9;
+.sidebar-nav a span {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+}
+
+.sidebar-footer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sidebar-footer button {
+  flex-grow: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-footer button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }

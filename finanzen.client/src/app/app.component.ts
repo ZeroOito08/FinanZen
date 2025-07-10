@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, Observable } from 'rxjs';
 import { UiService } from './services/ui.service';
+import { LoadingService } from './services/loading.service';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +13,20 @@ export class AppComponent {
   title = 'finanzen.client';
   // Propriedade local para controlar o *ngIf no HTML
   showNavbar = false;
+  public isLoading: Observable<boolean>;
 
-  constructor(private router: Router, private uiService: UiService) {
+  constructor(
+    private router: Router, 
+    private uiService: UiService,
+    private loadingService: LoadingService
+  ) {
+
+    this.isLoading = this.loadingService.isLoading;
     // Ouve o estado do UiService
     this.uiService.showNavbar.subscribe(value => {
+      setTimeout(() => {
       this.showNavbar = value;
+    }, 0);
     });
 
     // Ouve os eventos de navegação do roteador

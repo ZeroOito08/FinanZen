@@ -1,0 +1,58 @@
+<div class="report-container glass-card">
+  <div class="report-header">
+    <h1>Relatório de Transações</h1>
+    <p>Gerado em: {{ dataGeracao | date: 'dd/MM/yyyy HH:mm' }}</p>
+  </div>
+
+  <div class="filters-container no-print">
+    <div class="form-group">
+      <label for="dataInicio">De:</label>
+      <input type="date" id="dataInicio" [(ngModel)]="filtros.dataInicio">
+    </div>
+    <div class="form-group">
+      <label for="dataFim">Até:</label>
+      <input type="date" id="dataFim" [(ngModel)]="filtros.dataFim">
+    </div>
+    <div class="form-group">
+      <label for="tipo">Tipo:</label>
+      <select id="tipo" [(ngModel)]="filtros.tipo">
+        <option value="Todos">Todos</option>
+        <option value="Receita">Receita</option>
+        <option value="Despesa">Despesa</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" (click)="aplicarFiltros()">Aplicar Filtros</button>
+  </div>
+  
+  <button class="btn btn-primary no-print" (click)="exportarParaPDF()">Exportar para PDF</button>
+
+  <div class="report-content" #reportContent>
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th class="align-right">Valor (R$)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="transacoes.length === 0">
+          <td colspan="4" style="text-align: center;">Nenhuma transação encontrada.</td>
+        </tr>
+        <tr *ngFor="let transacao of transacoes">
+          <td>{{ transacao.data | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ transacao.descricao }}</td>
+          <td>{{ transacao.categoriaNome }}</td>
+          <td class="align-right" [ngClass]="{'receita': transacao.tipo === 'Receita', 'despesa': transacao.tipo === 'Despesa'}">
+                <span *ngIf="transacao.tipo === 'Receita'">+</span>
+                <span *ngIf="transacao.tipo === 'Despesa'">-</span>
+                {{ transacao.valor | currency:'BRL' }}
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        </tfoot>
+    </table>
+  </div>
+</div>

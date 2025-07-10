@@ -13,19 +13,16 @@ export class NavbarComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Verifica o tema salvo no localStorage quando o componente inicia
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      this.isDarkMode = savedTheme === 'dark';
-      document.body.setAttribute('data-theme', savedTheme);
-    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    this.isDarkMode = savedTheme === 'dark';
+    document.body.setAttribute('data-theme', savedTheme);
   }
 
   toggleTheme(): void {
     this.isDarkMode = !this.isDarkMode;
     const newTheme = this.isDarkMode ? 'dark' : 'light';
     document.body.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme); // Salva a escolha do usuário
+    localStorage.setItem('theme', newTheme);
   }
 
   logout(): void {

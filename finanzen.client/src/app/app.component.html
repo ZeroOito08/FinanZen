@@ -1,7 +1,10 @@
-﻿<app-navbar *ngIf="showNavbar"></app-navbar>
+﻿<div class="app-layout">
+  <app-navbar *ngIf="showNavbar" class="app-sidebar"></app-navbar>
 
-<main>
-  <div class="main-container">
+  <main class="app-content">
     <router-outlet></router-outlet>
-  </div>
-</main>
+  </main>
+
+  <app-loading-spinner *ngIf="isLoading | async"></app-loading-spinner>
+  
+</div>

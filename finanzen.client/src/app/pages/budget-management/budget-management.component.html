@@ -1,0 +1,35 @@
+<div class="budget-container glass-card">
+  <div class="header">
+    <h2>Orçamentos do Mês</h2>
+    <p>Defina os seus limites de gastos para cada categoria.</p>
+  </div>
+
+  <div class="budget-list">
+    <div *ngFor="let orcamento of orcamentos" class="budget-item">
+
+      <div class="category-info">
+        <span class="category-name">{{ orcamento.categoriaNome }}</span>
+        <div class="progress-bar-container">
+          <div class="progress-bar" 
+               [style.width.%]="(orcamento.valorGasto / orcamento.valorOrcado) * 100">
+          </div>
+        </div>
+        <span class="spent-info">
+          Gasto: {{ orcamento.valorGasto | currency:'BRL' }} de {{ orcamento.valorOrcado | currency:'BRL' }}
+        </span>
+      </div>
+
+      <div class="budget-input">
+        <label>Definir Orçamento (R$)</label>
+        <input type="number" 
+               placeholder="0.00" 
+               [(ngModel)]="orcamento.valorOrcado"
+               (blur)="salvarOrcamento(orcamento)">
+      </div>
+    </div>
+
+    <div *ngIf="orcamentos.length === 0" class="empty-state">
+      <p>Não foram encontradas categorias de despesa para definir orçamentos.</p>
+    </div>
+  </div>
+</div>

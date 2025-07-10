@@ -1,0 +1,79 @@
+:host {
+  display: block;
+}
+
+.report-header {
+  border-bottom: 2px solid var(--cor-borda);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-header h1 {
+  margin: 0;
+}
+
+.report-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
+
+.no-print {
+    margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--cor-borda);
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.receita {
+  color: #28a745; /* Verde para receitas */
+}
+
+.despesa {
+  color: #dc3545; /* Vermelho para despesas */
+}
+
+/* ... (estilos existentes) ... */
+
+.filters-container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.25rem;
+  font-size: 0.9em;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 4px;
+  background-color: var(--cor-fundo-secundario);
+  color: var(--text-primary);
+}

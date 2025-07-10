@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http'; // Importa HttpParams
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router'; // 1. Importar o Router
+import { Router } from '@angular/router';
 import { TransacaoDetalhes } from '../../models/transacao.model';
 
 @Component({
@@ -9,18 +9,30 @@ import { TransacaoDetalhes } from '../../models/transacao.model';
   styleUrls: ['./transaction-list.component.css']
 })
 export class TransactionListComponent implements OnInit {
-  
-  public transacoes: TransacaoDetalhes[] = [];
 
-  // 2. Injetar o Router no construtor
+  public transacoes: TransacaoDetalhes[] = [];
+  // VVV Propriedades para os filtros de data VVV
+  public filtroDataInicio: string = '';
+  public filtroDataFim: string = '';
+
   constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
     this.carregarTransacoes();
   }
 
+  // Agora, o método carregarTransacoes usa os filtros
   carregarTransacoes(): void {
-    this.http.get<TransacaoDetalhes[]>('/api/transacoes').subscribe({
+    let params = new HttpParams();
+    if (this.filtroDataInicio) {
+      params = params.append('dataInicio', this.filtroDataInicio);
+    }
+    if (this.filtroDataFim) {
+      params = params.append('dataFim', this.filtroDataFim);
+    }
+
+    // A chamada http agora inclui os parâmetros, se eles existirem
+    this.http.get<TransacaoDetalhes[]>('/api/transacoes', { params }).subscribe({
       next: (data) => {
         this.transacoes = data;
       },
@@ -30,10 +42,12 @@ export class TransactionListComponent implements OnInit {
     });
   }
 
-  // 3. Implementação correta do método para editar
+  // Este novo método é chamado pelo botão "Filtrar"
+  aplicarFiltros(): void {
+    this.carregarTransacoes();
+  }
+
   editarTransacao(transacao: TransacaoDetalhes): void {
-    // Navega para a rota '/transacoes' e passa os dados da transação
-    // através do objeto 'state'.
     this.router.navigate(['/transacoes'], { state: { transacaoData: transacao } });
   }
 
@@ -41,11 +55,9 @@ export class TransactionListComponent implements OnInit {
     if (confirm('Tem certeza que deseja excluir esta transação?')) {
       this.http.delete(`/api/transacoes/${id}`).subscribe({
         next: () => {
-          alert('Transação excluída com sucesso!');
           this.transacoes = this.transacoes.filter(t => t.transacaoID !== id);
         },
         error: (err) => {
-          console.error('Erro ao excluir transação', err);
           alert('Falha ao excluir a transação.');
         }
       });

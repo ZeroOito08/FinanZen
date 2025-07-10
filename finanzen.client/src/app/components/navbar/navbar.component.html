@@ -1,13 +1,35 @@
-<nav class="navbar">
-  <div class="navbar-brand">
-    <a routerLink="/dashboard">FinanZen</a>
+<div class="sidebar-container">
+  <div class="sidebar-header">
+    <span class="logo-icon">💰</span> <h3>FinanZen</h3>
   </div>
-  <div class="navbar-links">
-    <a routerLink="/transacoes">Nova Transação</a>
-    <a routerLink="/minhas-transacoes">Minhas Transações</a>
-    <button (click)="logout()">Sair</button>
-    <button (click)="toggleTheme()">
-        {{ isDarkMode ? '☀️' : '🌙' }}
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard" routerLinkActive="active">
+      <span>📊</span> Dashboard
+    </a>
+    <a routerLink="/minhas-transacoes" routerLinkActive="active">
+      <span>📄</span> Minhas Transações
+    </a>
+    <a routerLink="/orcamentos" routerLinkActive="active">
+      <span>💰</span> Orçamentos
+    </a>
+    <a routerLink="/transacoes" routerLinkActive="active">
+      <span>➕</span> Nova Transação
+    </a>
+    <a routerLink="/categorias" routerLinkActive="active">
+      <span>🏷️</span> Categorias
+    </a>
+    <a routerLink="/relatorios" routerLinkActive="active">
+      <span>📄</span> Relatórios
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="theme-toggle" (click)="toggleTheme()">
+      {{ isDarkMode ? '☀️' : '🌙' }}
+    </button>
+    <button class="logout-btn" (click)="logout()">
+      <span>🚪</span> Sair
     </button>
   </div>
-</nav>
+</div>

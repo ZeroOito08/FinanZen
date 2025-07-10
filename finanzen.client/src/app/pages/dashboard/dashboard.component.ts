@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ChartData, ChartOptions } from 'chart.js'; // 1. Importar ChartData
+import { ChartData, ChartOptions } from 'chart.js'; // Import ChartData
 
-// Interface para o resumo financeiro
+// Interface for the financial summary
 interface ResumoFinanceiro {
   totalReceitas: number;
   totalDespesas: number;
@@ -16,12 +16,12 @@ interface ResumoFinanceiro {
 })
 export class DashboardComponent implements OnInit {
   public resumo: ResumoFinanceiro | null = null;
-
-  // --- Propriedades Corrigidas para o Gráfico ---
+  
+  // --- Properties for the Pie Chart ---
   public pieChartOptions: ChartOptions<'pie'> = {
     responsive: true,
   };
-  // 2. Tipagem correta para os dados do gráfico
+  // Correctly typed data object for the chart
   public pieChartData: ChartData<'pie', number[], string | string[]> = {
     labels: [],
     datasets: [{
@@ -29,13 +29,13 @@ export class DashboardComponent implements OnInit {
     }]
   };
   public pieChartLegend = true;
-  // --- Fim das Propriedades do Gráfico ---
+  // --- End of Chart Properties ---
 
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.carregarResumo();
-    this.carregarDadosGrafico(); // Chamada agora está no lugar certo
+    this.carregarDadosGrafico(); // This call is now correctly placed
   }
 
   carregarResumo(): void {
@@ -44,24 +44,23 @@ export class DashboardComponent implements OnInit {
         this.resumo = data;
       },
       error: (err) => {
-        console.error('Erro ao carregar resumo financeiro', err);
-        alert('Falha ao carregar o resumo financeiro.');
+        console.error('Error loading financial summary', err);
       }
     });
   }
 
-  // 3. Função movida para fora do subscribe, para o corpo da classe
+  // This function is now correctly defined as a method of the class
   carregarDadosGrafico(): void {
     this.http.get<any[]>('/api/dashboard/despesas-por-categoria').subscribe({
       next: (data) => {
-        console.log("Dados do gráfico recebidos:", data);
+        console.log("Chart data received:", data);
         
-        // Atualiza as propriedades do objeto pieChartData
+        // Update the properties of the pieChartData object
         this.pieChartData.labels = data.map(item => item.categoria);
         this.pieChartData.datasets[0].data = data.map(item => item.total);
       },
       error: (err) => {
-        console.error('Erro ao carregar dados do gráfico', err);
+        console.error('Error loading chart data', err);
       }
     });
   }

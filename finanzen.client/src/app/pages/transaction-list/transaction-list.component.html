@@ -1,6 +1,24 @@
 <div class="list-container">
   <h2>Minhas Transações</h2>
 
+  <div class="list-container">
+
+
+  <div class="filter-container">
+    <div class="form-group">
+      <label for="dataInicio">De:</label>
+      <input type="date" id="dataInicio" [(ngModel)]="filtroDataInicio">
+    </div>
+    <div class="form-group">
+      <label for="dataFim">Até:</label>
+      <input type="date" id="dataFim" [(ngModel)]="filtroDataFim">
+    </div>
+    <button class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
+  </div>
+  <table>
+    </table>
+</div>
+
   <table>
     <thead>
       <tr>
@@ -22,8 +40,8 @@
         <td>{{ transacao.categoriaNome }}</td>
         <td>{{ transacao.valor | number: '1.2-2' }}</td>
         <td>
-          <button class="edit-btn" (click)="editarTransacao(transacao)">Editar</button>
-          <button class="delete-btn" (click)="deletarTransacao(transacao.transacaoID)">Excluir</button>
+          <button class="btn btn-secondary" (click)="editarTransacao(transacao)">Editar</button>
+          <button class="btn btn-danger" (click)="deletarTransacao(transacao.transacaoID)">Excluir</button>
         </td>
       </tr>
     </tbody>

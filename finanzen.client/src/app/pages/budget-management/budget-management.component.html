@@ -1,12 +1,12 @@
 <div class="budget-container glass-card">
-  <div class="header">
+  <div class="form-header">
     <h2>Orçamentos do Mês</h2>
     <p>Defina os seus limites de gastos para cada categoria.</p>
   </div>
 
   <div class="budget-list">
     <div *ngFor="let orcamento of orcamentos" class="budget-item">
-
+      
       <div class="category-info">
         <span class="category-name">{{ orcamento.categoriaNome }}</span>
         <div class="progress-bar-container">

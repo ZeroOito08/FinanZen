@@ -8,6 +8,8 @@ namespace FinanZen.Server.Models
         [Key]
         public int OrcamentoID { get; set; }
 
+        public int? FamiliaId { get; set; }
+
         [Required]
         public int UsuarioID { get; set; }
         public Usuario? Usuario { get; set; }
@@ -25,5 +27,7 @@ namespace FinanZen.Server.Models
 
         [Required]
         public int Ano { get; set; }
+
+        public virtual Familia? Familia { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+// src/app/services/ui.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
@@ -5,8 +6,6 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class UiService {
-  // Guarda o estado de visibilidade do menu. Começa como 'false' (escondido).
-  public showNavbar: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-  constructor() { }
+  // A visibilidade começa como 'false'
+  public showNavbar = new BehaviorSubject<boolean>(false);
 }

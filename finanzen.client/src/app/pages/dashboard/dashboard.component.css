@@ -21,11 +21,72 @@
 }
 
 .card p {
-  font-size: 2em;
+  font-size: 2.2em;
   font-weight: bold;
   margin-bottom: 0;
 }
 
 .card-receitas { background-color: #28a745; }
 .card-despesas { background-color: #dc3545; }
-.card-saldo { background-color: #007bff; }
+.card-saldo.positivo { background-color: #007bff; }
+.card-saldo.negativo { background-color: #6c757d; }
+
+.card-saldo.negativo p {
+  color: #dc3545; /* Um vermelho mais claro para contrastar bem com o fundo */
+}
+
+/* Opcional: Podemos também definir a cor para o saldo positivo */
+.card-saldo.positivo p {
+  color: white; /* Garante que seja sempre branco no fundo azul */
+}
+
+/* ==================================
+   VVV CSS DOS GRÁFICOS CORRIGIDO VVV
+   ================================== */
+.charts-wrapper {
+  display: flex; /* Ativa o Flexbox */
+  gap: 2rem; /* Espaço entre os gráficos */
+  margin-top: 2.5rem;
+  align-items: stretch; /* Força os filhos a terem a mesma altura */
+}
+
+.chart-container {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 var(--shadow-color);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Define as proporções dos gráficos */
+.chart-container.pie-chart {
+  flex: 0 1 30%; /* Ocupa 35% do espaço */
+}
+
+.chart-container.line-chart {
+  flex: 0 1 60%; /* Ocupa 65% do espaço */
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.period-buttons .btn {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--cor-borda);
+  margin-left: 0.5rem;
+  padding: 6px 12px;
+}
+
+.period-buttons .btn.active {
+  background-color: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}

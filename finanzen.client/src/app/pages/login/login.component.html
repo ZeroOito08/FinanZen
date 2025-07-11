@@ -1,6 +1,9 @@
-<div class="login-container">
-  <h2>Login</h2>
-  <p>Acesse sua conta para gerenciar suas finanças.</p>
+<div class="form-wrapper glass-card">
+
+  <div class="form-header">
+    <h2>Login</h2>
+    <p>Acesse sua conta para gerenciar suas finanças.</p>
+  </div>
 
   <form #loginForm="ngForm" (ngSubmit)="onLogin()">
     <div class="form-group">
@@ -10,11 +13,10 @@
         id="email" 
         name="email" 
         [(ngModel)]="loginModel.email" 
-        placeholder="seuemail@exemplo.com"
         required 
         email>
     </div>
-  
+
     <div class="form-group">
       <label for="password">Senha:</label>
       <input 
@@ -22,16 +24,15 @@
         id="password" 
         name="password" 
         [(ngModel)]="loginModel.senha" 
-        placeholder="Sua senha"
         required>
     </div>
-  
-    <button type="submit" [disabled]="!loginForm.form.valid">Entrar</button>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="!loginForm.form.valid">Entrar</button>
+    </div>
   </form>
 
   <div class="extra-links">
     <a routerLink="/register">Primeiro acesso? Cadastre-se</a>
-    <span>|</span>
-    <a href="#">Esqueceu a senha?</a>
-  </div>
+    <a routerLink="/forgot-password">Esqueceu a senha?</a> </div>
 </div>

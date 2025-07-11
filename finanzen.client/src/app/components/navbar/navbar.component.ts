@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core'; // Adiciona OnInit
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service'; // 1. Importar
 
 @Component({
   selector: 'app-navbar',
@@ -7,10 +8,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-
   public isDarkMode = false;
 
-  constructor(private router: Router) {}
+  // 2. Injetar o AuthService
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -26,7 +27,7 @@ export class NavbarComponent implements OnInit {
   }
 
   logout(): void {
-    localStorage.removeItem('jwt_token');
+    this.authService.logout(); // 3. AVISAR O SERVIÇO
     this.router.navigate(['/login']);
   }
 }

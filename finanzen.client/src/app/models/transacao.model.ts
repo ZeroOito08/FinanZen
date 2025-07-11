@@ -8,3 +8,9 @@ export interface TransacaoDetalhes {
     categoriaNome?: string;
     tipo?: 'Receita' | 'Despesa';
 }
+
+export interface PaginatedResult<T> {
+  items: T[];
+  currentPage: number;
+  totalPages: number;
+}

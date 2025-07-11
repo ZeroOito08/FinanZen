@@ -1,0 +1,11 @@
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.pagination-controls span {
+  font-weight: 500;
+}

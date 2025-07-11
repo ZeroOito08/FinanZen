@@ -1,0 +1,93 @@
+:host {
+  display: block;
+}
+
+/* Usa a classe .form-header que já definimos no styles.css */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.header p {
+  color: var(--text-secondary);
+}
+
+.budget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.budget-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.budget-list .budget-item:last-child {
+  border-bottom: none;
+}
+
+.category-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.progress-bar-container {
+  height: 8px;
+  width: 100%;
+  background-color: var(--cor-fundo);
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--accent-color);
+  border-radius: 4px;
+  transition: width 0.3s ease-in-out;
+  max-width: 100%; /* Garante que a barra não ultrapasse 100% */
+}
+
+.spent-info {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
+
+.budget-input {
+  display: flex;
+  flex-direction: column;
+}
+
+.budget-input label {
+  font-size: 0.8em;
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+}
+
+.budget-input input {
+  width: 120px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--glass-border);
+  background-color: transparent;
+  color: var(--text-primary);
+  text-align: right;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}

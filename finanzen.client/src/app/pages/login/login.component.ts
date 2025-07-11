@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { NotificationService } from '../../services/notification.service'; // IMPORTAR
+import { AuthService } from '../../services/auth.service'; // 1. Importar
 
 @Component({
   selector: 'app-login',
@@ -11,22 +11,22 @@ import { NotificationService } from '../../services/notification.service'; // IM
 export class LoginComponent {
   loginModel: any = {};
 
-  // INJETAR O NOVO SERVIÇO
+  // 2. Injetar o AuthService
   constructor(
     private http: HttpClient, 
-    private router: Router, 
-    private notification: NotificationService
+    private router: Router,
+    private authService: AuthService
   ) { }
 
   onLogin() {
     this.http.post<any>('/api/login', this.loginModel).subscribe({
       next: (response) => {
         localStorage.setItem('jwt_token', response.token);
-        this.notification.showSuccess('Login realizado com sucesso!'); // USAR O SERVIÇO
-        this.router.navigate(['/dashboard']);
+        this.authService.login(); // 3. AVISAR O SERVIÇO
+        this.router.navigate(['/dashboard']); 
       },
       error: (error) => {
-        this.notification.showError('Email ou senha inválidos.'); // USAR O SERVIÇO
+        alert('Email ou senha inválidos.');
       }
     });
   }

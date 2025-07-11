@@ -10,6 +10,7 @@ namespace FinanZen.Server.Models
     {
         [Key]
         public int TransacaoID { get; set; }
+        public int? FamiliaId { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -26,6 +27,7 @@ namespace FinanZen.Server.Models
         public int UsuarioID { get; set; }
         public int CategoriaID { get; set; }
 
+        public virtual Familia? Familia { get; set; }
         // Propriedades de Navegação
         public virtual Usuario? Usuario { get; set; }
         public virtual Categoria? Categoria { get; set; }

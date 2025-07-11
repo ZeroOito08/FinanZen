@@ -135,3 +135,71 @@ tbody tr:last-child td {
 tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* Cole no final do seu styles.css */
+
+/* ==============================
+   Estilos Globais para Formulários
+   ============================== */
+
+.form-wrapper {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.form-header p {
+  color: var(--text-secondary);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background-color: transparent; /* Importante para o efeito de vidro */
+  color: var(--text-primary);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-actions {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Estilo para links extras, como em Login e Cadastro */
+.extra-links {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.extra-links a {
+  color: var(--accent-color);
+  text-decoration: none;
+  cursor: pointer;
+  margin: 0 0.5rem;
+}

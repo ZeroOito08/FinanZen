@@ -1,7 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http'; // Importa HttpParams
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TransacaoDetalhes } from '../../models/transacao.model';
+// Importa os nossos modelos atualizados
+import { TransacaoDetalhes, PaginatedResult } from '../../models/transacao.model';
+import { NotificationService } from '../../services/notification.service'; // Importa o serviço de notificação
 
 @Component({
   selector: 'app-transaction-list',
@@ -11,19 +13,27 @@ import { TransacaoDetalhes } from '../../models/transacao.model';
 export class TransactionListComponent implements OnInit {
 
   public transacoes: TransacaoDetalhes[] = [];
-  // VVV Propriedades para os filtros de data VVV
+  public currentPage = 1;
+  public totalPages = 1;
   public filtroDataInicio: string = '';
   public filtroDataFim: string = '';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private notification: NotificationService // Injeta o serviço
+  ) { }
 
   ngOnInit(): void {
-    this.carregarTransacoes();
+    // CORREÇÃO: Chama a função passando a página atual
+    this.carregarTransacoes(this.currentPage);
   }
 
-  // Agora, o método carregarTransacoes usa os filtros
-  carregarTransacoes(): void {
-    let params = new HttpParams();
+  carregarTransacoes(page: number): void {
+    let params = new HttpParams()
+      .set('pageNumber', page.toString())
+      .set('pageSize', '10');
+
     if (this.filtroDataInicio) {
       params = params.append('dataInicio', this.filtroDataInicio);
     }
@@ -31,20 +41,35 @@ export class TransactionListComponent implements OnInit {
       params = params.append('dataFim', this.filtroDataFim);
     }
 
-    // A chamada http agora inclui os parâmetros, se eles existirem
-    this.http.get<TransacaoDetalhes[]>('/api/transacoes', { params }).subscribe({
+    this.http.get<PaginatedResult<TransacaoDetalhes>>('/api/transacoes', { params }).subscribe({
       next: (data) => {
-        this.transacoes = data;
+        this.transacoes = data.items;
+        this.currentPage = data.currentPage;
+        this.totalPages = data.totalPages;
       },
       error: (err) => {
-        alert('Falha ao carregar as transações.');
+        this.notification.showError('Falha ao carregar as transações.');
       }
     });
   }
 
-  // Este novo método é chamado pelo botão "Filtrar"
   aplicarFiltros(): void {
-    this.carregarTransacoes();
+    this.currentPage = 1; // Volta para a primeira página ao aplicar filtros
+    this.carregarTransacoes(this.currentPage);
+  }
+
+  proximaPagina(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.carregarTransacoes(this.currentPage);
+    }
+  }
+
+  paginaAnterior(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.carregarTransacoes(this.currentPage);
+    }
   }
 
   editarTransacao(transacao: TransacaoDetalhes): void {
@@ -55,10 +80,11 @@ export class TransactionListComponent implements OnInit {
     if (confirm('Tem certeza que deseja excluir esta transação?')) {
       this.http.delete(`/api/transacoes/${id}`).subscribe({
         next: () => {
-          this.transacoes = this.transacoes.filter(t => t.transacaoID !== id);
+          this.notification.showSuccess('Transação excluída com sucesso!');
+          this.carregarTransacoes(this.currentPage);
         },
-        error: (err) => {
-          alert('Falha ao excluir a transação.');
+        error: () => {
+          this.notification.showError('Falha ao excluir a transação.');
         }
       });
     }

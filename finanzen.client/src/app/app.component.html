@@ -1,7 +1,12 @@
 ﻿<div class="app-layout">
-  <app-navbar *ngIf="showNavbar" class="app-sidebar"></app-navbar>
+  <!-- O *ngIf agora usa o async pipe para mostrar/esconder o menu -->
+  <app-navbar *ngIf="showNavbar$ | async" class="app-sidebar"></app-navbar>
 
   <main class="app-content">
     <router-outlet></router-outlet>
   </main>
+
+  <app-loading-spinner *ngIf="isLoading$ | async"></app-loading-spinner>
+  
 </div>
+

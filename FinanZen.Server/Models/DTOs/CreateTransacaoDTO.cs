@@ -2,7 +2,7 @@
 {
     public class CreateTransacaoDTO
     {
-        public required string Descricao { get; set; }
+        public string Descricao { get; set; } = string.Empty; // Inicializa com valor padrão
         public decimal Valor { get; set; }
         public DateOnly Data { get; set; }
         public int UsuarioID { get; set; }

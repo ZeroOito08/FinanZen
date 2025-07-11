@@ -5,6 +5,7 @@
 
 
   <div class="filter-container">
+   <div class="form-wrapper glass-card">
     <div class="form-group">
       <label for="dataInicio">De:</label>
       <input type="date" id="dataInicio" [(ngModel)]="filtroDataInicio">
@@ -14,10 +15,12 @@
       <input type="date" id="dataFim" [(ngModel)]="filtroDataFim">
     </div>
     <button class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
+   </div>
   </div>
-  <table>
+    <table>
     </table>
-</div>
+  </div>
+
 
   <table>
     <thead>
@@ -46,4 +49,13 @@
       </tr>
     </tbody>
   </table>
+  <div class="pagination-controls" *ngIf="totalPages > 1">
+    <button class="btn" (click)="paginaAnterior()" [disabled]="currentPage === 1">
+      Anterior
+    </button>
+    <span>Página {{ currentPage }} de {{ totalPages }}</span>
+    <button class="btn" (click)="proximaPagina()" [disabled]="currentPage === totalPages">
+      Próxima
+    </button>
+</div>
 </div>

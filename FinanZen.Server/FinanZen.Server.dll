@@ -1,20 +1,17 @@
-# Etapa 1: build
+# Etapa de build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copia o .csproj e restaura dependências
-COPY *.csproj ./
-RUN dotnet restore
-
-# Copia o restante dos arquivos e publica o app
 COPY . ./
+RUN dotnet restore
 RUN dotnet publish -c Release -o out
 
-# Etapa 2: runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+# Etapa de runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
 
-# Define porta padrão (Render escuta na 80)
+ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
+
 ENTRYPOINT ["dotnet", "FinanZen.Server.dll"]

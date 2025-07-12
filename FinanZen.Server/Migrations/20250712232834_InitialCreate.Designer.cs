@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinanZen.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250712012317_UpdateUsuarioIdInResetSenhaToken")]
-    partial class UpdateUsuarioIdInResetSenhaToken
+    [Migration("20250712232834_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

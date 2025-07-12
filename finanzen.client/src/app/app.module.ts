@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { NgChartsModule } from 'ng2-charts';
+import { CommonModule } from '@angular/common'; // ✅ IMPORTADO
 
 // Componentes
 import { AppComponent } from './app.component';
@@ -20,17 +21,20 @@ import { CategoryFormComponent } from './components/category-form/category-form.
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { BudgetManagementComponent } from './pages/budget-management/budget-management.component';
+import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha.component';
+import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha.component';
 
 // Guards e Interceptors
 import { authGuard } from './guards/auth.guard';
-import { authInterceptor } from './interceptors/auth.interceptor';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
-
-
+import { AuthErrorInterceptor } from './interceptors/auth-error.interceptor';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'esqueci-senha', component: EsqueciSenhaComponent },
+  { path: 'redefinir-senha', component: RedefinirSenhaComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'transacoes', component: TransactionFormComponent, canActivate: [authGuard] },
   { path: 'minhas-transacoes', component: TransactionListComponent, canActivate: [authGuard] },
@@ -54,13 +58,16 @@ const appRoutes: Routes = [
     CategoryFormComponent,
     LoadingSpinnerComponent,
     ReportsComponent,
-    BudgetManagementComponent
+    BudgetManagementComponent,
+    EsqueciSenhaComponent,
+    RedefinirSenhaComponent
   ],
   imports: [
     BrowserModule,
+    CommonModule, // ✅ Adicionado
+    RouterModule.forRoot(appRoutes), // ✅ Colocado antes do FormsModule
     FormsModule,
     HttpClientModule,
-    RouterModule.forRoot(appRoutes),
     BrowserAnimationsModule,
     ToastrModule.forRoot({
       timeOut: 5000,
@@ -70,11 +77,11 @@ const appRoutes: Routes = [
     NgChartsModule
   ],
   providers: [
-    // Forma correta de registar o interceptor de classe (Loading)
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
-    // Forma correta de registar o interceptor de função (Auth)
-    provideHttpClient(withInterceptors([authInterceptor]))
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthErrorInterceptor, multi: true }
   ],
+
   bootstrap: [AppComponent]
 })
 export class AppModule { }

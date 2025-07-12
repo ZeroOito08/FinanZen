@@ -2,7 +2,6 @@
   <h2>Meu Resumo do Mês</h2>
 
   <div *ngIf="resumo" class="summary-cards">
-
     <div class="card card-receitas">
       <h3>Total de Receitas</h3>
       <p>{{ resumo.totalReceitas | currency:'BRL' }}</p>
@@ -17,16 +16,16 @@
       <h3>Saldo Atual</h3>
       <p>{{ resumo.saldo | currency:'BRL' }}</p>
     </div>
-
   </div>
 
   <div *ngIf="!resumo">
     <p>Carregando resumo...</p>
   </div>
 
+  <!-- ✅ Os gráficos estão fora da estrutura dos cards -->
   <div class="charts-wrapper">
-
-    <div class="chart-container pie-chart" style="width: 25%; margin: auto;">
+    <!-- Gráfico de Pizza -->
+    <div class="chart-container pie-chart">
       <h3 *ngIf="pieChartData.datasets[0].data.length > 0">Despesas por Categoria</h3>
       <canvas baseChart
         [data]="pieChartData" [labels]="pieChartData.labels"
@@ -35,22 +34,24 @@
         type="pie">
       </canvas>
     </div>
-    <div class="chart-container glass-card line-chart" style="margin-top: 2rem;">
-    <div class="chart-header">
-      <h3>Fluxo de Caixa</h3>
-      <div class="period-buttons">
-        <button class="btn" [class.active]="periodoSelecionado === 'dia'" (click)="carregarDadosGraficoLinhas('dia')">Hoje</button>
-        <button class="btn" [class.active]="periodoSelecionado === '7dias'" (click)="carregarDadosGraficoLinhas('7dias')">7 Dias</button>
-        <button class="btn" [class.active]="periodoSelecionado === '30dias'" (click)="carregarDadosGraficoLinhas('30dias')">30 Dias</button>
+
+    <!-- Gráfico de Linhas -->
+    <div class="chart-container line-chart">
+      <div class="chart-header">
+        <h3>Fluxo de Caixa</h3>
+        <div class="period-buttons">
+          <button class="btn" [class.active]="periodoSelecionado === 'dia'" (click)="carregarDadosGraficoLinhas('dia')">Hoje</button>
+          <button class="btn" [class.active]="periodoSelecionado === '7dias'" (click)="carregarDadosGraficoLinhas('7dias')">7 Dias</button>
+          <button class="btn" [class.active]="periodoSelecionado === '30dias'" (click)="carregarDadosGraficoLinhas('30dias')">30 Dias</button>
+        </div>
       </div>
-    </div>
-    <canvas baseChart
+
+      <canvas baseChart
         [data]="lineChartData"
         [options]="lineChartOptions"
         [legend]="lineChartLegend"
         type="line">
-    </canvas>
+      </canvas>
+    </div>
   </div>
-</div>
-
 </div>

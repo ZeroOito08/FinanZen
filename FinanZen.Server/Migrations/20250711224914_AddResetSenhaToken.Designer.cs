@@ -3,6 +3,7 @@ using System;
 using FinanZen.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinanZen.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250711224914_AddResetSenhaToken")]
+    partial class AddResetSenhaToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,14 +149,14 @@ namespace FinanZen.Server.Migrations
                         .HasColumnType("text")
                         .HasColumnName("token");
 
-                    b.Property<int>("UsuarioId")
+                    b.Property<int>("UsuarioID")
                         .HasColumnType("integer")
                         .HasColumnName("usuario_id");
 
                     b.HasKey("Id")
                         .HasName("pk_reset_senha_tokens");
 
-                    b.HasIndex("UsuarioId")
+                    b.HasIndex("UsuarioID")
                         .HasDatabaseName("ix_reset_senha_tokens_usuario_id");
 
                     b.ToTable("reset_senha_tokens", (string)null);
@@ -296,7 +299,7 @@ namespace FinanZen.Server.Migrations
                 {
                     b.HasOne("FinanZen.Server.Models.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("UsuarioId")
+                        .HasForeignKey("UsuarioID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_reset_senha_tokens_usuarios_usuario_id");

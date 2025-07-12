@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using FinanZen.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,7 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityRequirement(new OpenApiSecurityRequirement { { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }, new string[] { } } });
 });
 
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 
@@ -83,12 +85,11 @@ app.MapPost("/api/login", async (LoginDTO loginDTO, ApplicationDbContext context
 
     var claims = new[]
     {
+        new Claim(ClaimTypes.NameIdentifier, usuario.UsuarioID.ToString()), // <-- CORREÇÃO FEITA AQUI
         new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuarioID.ToString()),
         new Claim(JwtRegisteredClaimNames.Email, usuario.Email!),
         new Claim(JwtRegisteredClaimNames.Name, usuario.Nome!),
-
-        // 🆕 Aqui incluímos o ID da família no token!
-        new Claim("FamiliaId", usuario.FamiliaId?.ToString() ?? "0")
+        new Claim("FamiliaId", usuario.FamiliaId?.ToString() ?? "0"),
         new Claim("IsAdmin", usuario.IsAdmin.ToString().ToLower())
     };
 
@@ -103,6 +104,104 @@ app.MapPost("/api/login", async (LoginDTO loginDTO, ApplicationDbContext context
 
     return Results.Ok(new { Token = tokenString });
 });
+
+// --- Endpoint de Registro ÚNICO corrigido ---
+app.MapPost("/api/usuarios", async (RegisterDTO dto, ApplicationDbContext db) =>
+{
+    if (await db.Usuarios.AnyAsync(u => u.Email == dto.Email))
+        return Results.BadRequest("Email já está em uso.");
+
+    var senhaHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha);
+
+    var usuario = new Usuario
+    {
+        Nome = dto.Nome,
+        Email = dto.Email,
+        SenhaHash = senhaHash,
+        DataCriacao = DateTime.UtcNow
+    };
+
+    db.Usuarios.Add(usuario);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { usuario.UsuarioID, usuario.Nome, usuario.Email });
+});
+
+
+
+
+app.MapPost("/api/esqueci-senha", async (EsqueciSenhaDTO dto, ApplicationDbContext context, IEmailSender emailSender, IConfiguration config) =>
+{
+    var usuario = await context.Usuarios.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+    if (usuario == null)
+        return Results.BadRequest("Usuário não encontrado.");
+
+    var token = Guid.NewGuid().ToString();
+
+    var tokenEntry = new ResetSenhaToken
+    {
+        UsuarioId = usuario.UsuarioID,
+        Token = token,
+        ExpiraEm = DateTime.UtcNow.AddHours(1)
+    };
+
+    context.ResetSenhaTokens.Add(tokenEntry);
+    await context.SaveChangesAsync();
+
+    var url = $"{config["FrontendUrl"]}/redefinir-senha?token={token}";
+    var html = $"<p>Clique no link para redefinir sua senha: <a href=\"{url}\">Redefinir Senha</a></p>";
+
+    await emailSender.EnviarEmailAsync(usuario.Email!, "Redefinição de Senha - FinanZen", html);
+
+    return Results.Ok("E-mail enviado com sucesso!");
+});
+
+app.MapPost("/api/redefinir-senha", async (ResetSenhaDTO dto, ApplicationDbContext db) =>
+{
+    // Busca o token no banco
+    var reset = await db.ResetSenhaTokens
+        .Include(r => r.Usuario)
+        .FirstOrDefaultAsync(r => r.Token == dto.Token);
+
+    // Verifica se o token existe e ainda está válido
+    if (reset == null || reset.ExpiraEm < DateTime.UtcNow)
+        return Results.BadRequest("Token inválido ou expirado.");
+
+    // Altera a senha do usuário
+    reset.Usuario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+
+    // Remove o token usado (opcional para segurança)
+    db.ResetSenhaTokens.Remove(reset);
+
+    await db.SaveChangesAsync();
+
+    return Results.Ok("Senha redefinida com sucesso.");
+});
+
+
+
+// --- Endpoint exclusivo para ADMIN: Criar nova família ---
+app.MapPost("/api/familias", async (
+    [FromBody] FamiliaDTO novaFamilia,
+    ClaimsPrincipal user,
+    ApplicationDbContext context) =>
+{
+    var isAdmin = user.FindFirst("IsAdmin")?.Value;
+    if (isAdmin != "true")
+        return Results.Forbid();
+
+    var familia = new Familia
+    {
+        Nome = novaFamilia.Nome,
+        DataCriacao = DateTime.UtcNow
+    };
+
+    context.Familias.Add(familia);
+    await context.SaveChangesAsync();
+
+    return Results.Ok(new { familia.FamiliaID, familia.Nome });
+}).RequireAuthorization();
 
 // --- Endpoint para Dashboard ---
 app.MapGet("/api/dashboard/resumo", async (HttpContext httpContext, ApplicationDbContext context) =>
@@ -184,16 +283,6 @@ app.MapGet("/api/dashboard/despesas-por-categoria", async (HttpContext httpConte
     var dadosGrafico = await context.Transacoes.Where(t => t.UsuarioID == userId && t.Data >= primeiroDiaDoMes && t.Data <= ultimoDiaDoMes && t.Categoria != null && t.Categoria.Tipo == "Despesa").GroupBy(t => t.Categoria!.Nome).Select(g => new { Categoria = g.Key, Total = g.Sum(t => t.Valor) }).ToListAsync();
     return Results.Ok(dadosGrafico);
 }).RequireAuthorization();
-
-// --- Endpoints para Usuários ---
-app.MapPost("/api/usuarios", async (CreateUsuarioDTO usuarioDTO, ApplicationDbContext context) =>
-{
-    var novoUsuario = new Usuario { Nome = usuarioDTO.Nome, Email = usuarioDTO.Email, SenhaHash = BCrypt.Net.BCrypt.HashPassword(usuarioDTO.Senha) };
-    context.Usuarios.Add(novoUsuario);
-    await context.SaveChangesAsync();
-    novoUsuario.SenhaHash = "";
-    return Results.Created($"/api/usuarios/{novoUsuario.UsuarioID}", novoUsuario);
-});
 
 // --- Endpoints para Categorias ---
 app.MapGet("/api/categorias", async (HttpContext httpContext, ApplicationDbContext context) =>

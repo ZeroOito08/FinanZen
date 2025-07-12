@@ -1,0 +1,15 @@
+<h2>Redefinir Senha</h2>
+
+<form (submit)="redefinirSenha(); $event.preventDefault()">
+  <div>
+    <label>Nova Senha</label>
+    <input type="password" [(ngModel)]="novaSenha" name="novaSenha" required>
+  </div>
+
+  <div>
+    <label>Confirmar Senha</label>
+    <input type="password" [(ngModel)]="confirmacaoSenha" name="confirmacaoSenha" required>
+  </div>
+
+  <button type="submit">Redefinir Senha</button>
+</form>

@@ -1,6 +1,6 @@
-﻿namespace FinanZen.Server.Models.DTOs
+namespace FinanZen.Server.Models.DTOs
 {
-    public class CreateUsuarioDTO
+    public class RegisterDTO
     {
         public string Nome { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;

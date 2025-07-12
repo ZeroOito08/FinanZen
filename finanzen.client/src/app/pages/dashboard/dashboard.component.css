@@ -1,29 +1,36 @@
+/* ===== CONTAINER PRINCIPAL DO DASHBOARD ===== */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* ====== RESUMO DO MÊS - CARDS ====== */
 .summary-cards {
   display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-top: 20px;
   flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
 }
 
 .card {
+  flex: 1 1 250px;
   padding: 20px;
   border-radius: 8px;
   color: white;
-  width: 220px;
   text-align: center;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .card h3 {
-  margin-top: 0;
   font-size: 1.2em;
+  margin-bottom: 0.5rem;
 }
 
 .card p {
   font-size: 2.2em;
   font-weight: bold;
-  margin-bottom: 0;
+  margin: 0;
 }
 
 .card-receitas { background-color: #28a745; }
@@ -32,22 +39,18 @@
 .card-saldo.negativo { background-color: #6c757d; }
 
 .card-saldo.negativo p {
-  color: #dc3545; /* Um vermelho mais claro para contrastar bem com o fundo */
+  color: #dc3545;
 }
-
-/* Opcional: Podemos também definir a cor para o saldo positivo */
 .card-saldo.positivo p {
-  color: white; /* Garante que seja sempre branco no fundo azul */
+  color: white;
 }
 
-/* ==================================
-   VVV CSS DOS GRÁFICOS CORRIGIDO VVV
-   ================================== */
+/* ====== GRÁFICOS ====== */
 .charts-wrapper {
-  display: flex; /* Ativa o Flexbox */
-  gap: 2rem; /* Espaço entre os gráficos */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
   margin-top: 2.5rem;
-  align-items: stretch; /* Força os filhos a terem a mesma altura */
 }
 
 .chart-container {
@@ -57,19 +60,21 @@
   border: 1px solid var(--glass-border);
   box-shadow: 0 8px 32px 0 var(--shadow-color);
   padding: 1.5rem;
+  box-sizing: border-box;
+  height: 400px; /* ✅ LIMITA ALTURA */
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
-/* Define as proporções dos gráficos */
-.chart-container.pie-chart {
-  flex: 0 1 30%; /* Ocupa 35% do espaço */
+/* Corrige tamanho do gráfico interno */
+.chart-container canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 300px !important;
 }
 
-.chart-container.line-chart {
-  flex: 0 1 60%; /* Ocupa 65% do espaço */
-}
-
+/* Cabeçalho com os botões */
 .chart-header {
   display: flex;
   justify-content: space-between;
@@ -83,10 +88,29 @@
   border: 1px solid var(--cor-borda);
   margin-left: 0.5rem;
   padding: 6px 12px;
+  cursor: pointer;
 }
 
 .period-buttons .btn.active {
   background-color: var(--accent-color);
   color: white;
   border-color: var(--accent-color);
+}
+
+/* ====== RESPONSIVIDADE ====== */
+@media (max-width: 768px) {
+  .summary-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .charts-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-container {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
 }

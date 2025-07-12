@@ -19,15 +19,16 @@ export class LoginComponent {
   ) { }
 
   onLogin() {
-    this.http.post<any>('/api/login', this.loginModel).subscribe({
-      next: (response) => {
-        localStorage.setItem('jwt_token', response.token);
-        this.authService.login(); // 3. AVISAR O SERVIÇO
-        this.router.navigate(['/dashboard']); 
-      },
-      error: (error) => {
-        alert('Email ou senha inválidos.');
-      }
-    });
-  }
+  this.http.post<any>('/api/login', this.loginModel).subscribe({
+    next: (response) => {
+      // Agora passa o token diretamente para o AuthService
+      this.authService.login(response.token);
+      this.router.navigate(['/dashboard']); 
+    },
+    error: () => {
+      alert('Email ou senha inválidos.');
+    }
+  });
+}
+
 }

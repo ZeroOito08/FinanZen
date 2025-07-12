@@ -21,5 +21,7 @@ namespace FinanZen.Server.Data
         public DbSet<Transacao> Transacoes { get; set; }
         public DbSet<Orcamento> Orcamentos { get; set; }
         public DbSet<Familia> Familias { get; set; }
+        public DbSet<ResetSenhaToken> ResetSenhaTokens { get; set; } = null!;
+
     }
 }

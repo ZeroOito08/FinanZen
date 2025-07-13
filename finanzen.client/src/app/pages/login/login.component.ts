@@ -19,13 +19,15 @@ export class LoginComponent {
   ) { }
 
   onLogin() {
-  this.http.post<any>('/api/login', this.loginModel).subscribe({
-    next: (response) => {
-      // Agora passa o token diretamente para o AuthService
-      this.authService.login(response.token);
-      this.router.navigate(['/dashboard']); 
+  const { email, senha } = this.loginModel; // Extrai os dados do formulário
+
+  this.authService.loginRequest({ email, senha }).subscribe({
+    next: (res: any) => {
+      this.authService.setToken(res.token); // Armazena o token
+      this.router.navigate(['/dashboard']); // Redireciona para o dashboard
     },
-    error: () => {
+    error: (err) => {
+      console.error('Erro ao fazer login:', err);
       alert('Email ou senha inválidos.');
     }
   });

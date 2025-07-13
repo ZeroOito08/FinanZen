@@ -85,34 +85,42 @@ app.UseAuthorization();
 // --- Endpoint de Login ---
 app.MapPost("/api/login", async (LoginDTO loginDTO, ApplicationDbContext context, IConfiguration config) =>
 {
-    var usuario = await context.Usuarios.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
-
-    if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Senha, usuario.SenhaHash))
-        return Results.Unauthorized();
-
-    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
-    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-    var claims = new[]
+    try
     {
+        var usuario = await context.Usuarios.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
+
+        if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Senha, usuario.SenhaHash))
+            return Results.Unauthorized();
+
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
         new Claim(ClaimTypes.NameIdentifier, usuario.UsuarioID.ToString()), // <-- CORREÇÃO FEITA AQUI
         new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuarioID.ToString()),
         new Claim(JwtRegisteredClaimNames.Email, usuario.Email!),
         new Claim(JwtRegisteredClaimNames.Name, usuario.Nome!),
         new Claim("FamiliaId", usuario.FamiliaId?.ToString() ?? "0"),
         new Claim("IsAdmin", usuario.IsAdmin.ToString().ToLower())
-    };
+        };
 
-    var token = new JwtSecurityToken(
-        issuer: config["Jwt:Issuer"],
-        audience: config["Jwt:Audience"],
-        claims: claims,
-        expires: DateTime.Now.AddHours(8),
-        signingCredentials: credentials);
+        var token = new JwtSecurityToken(
+            issuer: config["Jwt:Issuer"],
+            audience: config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.Now.AddHours(8),
+            signingCredentials: credentials);
 
-    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-    return Results.Ok(new { Token = tokenString });
+        return Results.Ok(new { Token = tokenString });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erro no login: {ex.Message}");
+        return Results.Problem("Erro interno no servidor.");
+    }
 });
 
 // --- Endpoint de Registro ÚNICO corrigido ---

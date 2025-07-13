@@ -67,11 +67,13 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 var app = builder.Build();
 
 // --- Configuração do Pipeline de Requisições ---
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FinanZen API v1");
+    c.RoutePrefix = "swagger"; // importante para acessar via /swagger
+});
+
 app.UseHttpsRedirection();
 app.UseRouting(); // ✅ IMPORTANTE
 app.UseCors("AllowFrontend");

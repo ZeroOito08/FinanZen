@@ -73,6 +73,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
+app.UseRouting(); // ✅ IMPORTANTE
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();

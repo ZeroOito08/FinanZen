@@ -22,7 +22,7 @@ export class AuthService {
    * @param loginData Objeto com email e senha
    */
   loginRequest(loginData: any): Observable<any> {
-    const url = `${environment.apiUrl}/usuarios/login`;
+    const url = `${environment.apiUrl}/login`;
     return this.http.post(url, loginData);
   }
 

@@ -232,10 +232,28 @@ app.MapGet("/api/dashboard/resumo", async (HttpContext httpContext, ApplicationD
     var hoje = DateTime.UtcNow;
     var primeiroDiaDoMes = new DateOnly(hoje.Year, hoje.Month, 1);
     var ultimoDiaDoMes = primeiroDiaDoMes.AddMonths(1).AddDays(-1);
-    var transacoesDoMes = await context.Transacoes.Where(t => t.UsuarioID == userId && t.Data >= primeiroDiaDoMes && t.Data <= ultimoDiaDoMes).Include(t => t.Categoria).ToListAsync();
-    var totalReceitas = transacoesDoMes.Where(t => t.Categoria?.Tipo == "Receita").Sum(t => t.Valor);
-    var totalDespesas = transacoesDoMes.Where(t => t.Categoria?.Tipo == "Despesa").Sum(t => t.Valor);
-    var resumo = new ResumoFinanceiroDTO { TotalReceitas = totalReceitas, TotalDespesas = totalDespesas, Saldo = totalReceitas - totalDespesas };
+
+    var transacoesDoMes = await context.Transacoes
+        .Where(t => t.UsuarioID == userId && t.Data >= primeiroDiaDoMes && t.Data <= ultimoDiaDoMes)
+        .Include(t => t.Categoria)
+        .ToListAsync();
+
+    var totalReceitas = transacoesDoMes
+        .Where(t => t.Categoria?.Tipo == "Receita")
+        .Sum(t => t.Valor);
+
+    var totalDespesas = transacoesDoMes
+        .Where(t => t.Categoria?.Tipo == "Despesa")
+        .Sum(t => t.Valor);
+
+    // Garante que a resposta seja sempre um objeto JSON válido, mesmo que os valores sejam 0
+    var resumo = new ResumoFinanceiroDTO
+    {
+        TotalReceitas = totalReceitas,
+        TotalDespesas = totalDespesas,
+        Saldo = totalReceitas - totalDespesas
+    };
+
     return Results.Ok(resumo);
 }).RequireAuthorization();
 

@@ -9,7 +9,7 @@
     "rewrites": [
       {
         "source": "/api/**",
-        "destination": "https://finanzen.onrender.com/api"
+        "destination": "https://finanzen.onrender.com"
       },
       {
         "source": "**",

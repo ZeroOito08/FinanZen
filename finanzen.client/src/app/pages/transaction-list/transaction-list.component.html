@@ -11,6 +11,47 @@
         <label for="dataFim">Até:</label>
         <input type="date" id="dataFim" [(ngModel)]="filtroDataFim">
       </div>
+      
+      <!-- Novo filtro: Responsável -->
+      <div class="form-group">
+        <label for="responsavel">Responsável:</label>
+        <select id="responsavel" [(ngModel)]="filtroResponsavel">
+          <option value="Todos">Todos</option>
+          <option *ngFor="let responsavel of responsaveis" [value]="responsavel">{{ responsavel }}</option>
+        </select>
+      </div>
+
+      <!-- Novo filtro: Tipo de Pagamento -->
+      <div class="form-group">
+        <label for="tipoPagamento">Tipo de Pagamento:</label>
+        <select id="tipoPagamento" [(ngModel)]="filtroTipoPagamento">
+          <option value="Todos">Todos</option>
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Cartao_Debito">Cartão de Débito</option>
+          <option value="Cartao_Credito">Cartão de Crédito</option>
+          <option value="PIX">PIX</option>
+        </select>
+      </div>
+
+      <!-- Novo filtro: Tipo -->
+      <div class="form-group">
+        <label for="tipo">Tipo:</label>
+        <select id="tipo" [(ngModel)]="filtroTipo">
+          <option value="Todos">Todos</option>
+          <option value="Receita">Receita</option>
+          <option value="Despesa">Despesa</option>
+        </select>
+      </div>
+      
+      <!-- Novo filtro: Categoria -->
+      <div class="form-group">
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" [(ngModel)]="filtroCategoria">
+          <option value="Todos">Todos</option>
+          <option *ngFor="let categoria of categorias" [value]="categoria.categoriaID">{{ categoria.nome }}</option>
+        </select>
+      </div>
+      
       <button class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
     </div>
   </div>
@@ -21,7 +62,6 @@
         <th>Data</th>
         <th>Descrição</th>
         <th>Categoria</th>
-        <!-- Novos campos -->
         <th>Responsável</th>
         <th>Tipo de Pagamento</th>
         <th>Valor (R$)</th>
@@ -31,18 +71,17 @@
     </thead>
     <tbody>
       <tr *ngIf="transacoes.length === 0">
-        <td colspan="7">Nenhuma transação encontrada.</td>
+        <td colspan="8">Nenhuma transação encontrada.</td>
       </tr>
 
       <tr *ngFor="let transacao of transacoes">
         <td>{{ transacao.data | date: 'dd/MM/yyyy' }}</td>
         <td>{{ transacao.descricao }}</td>
         <td>{{ transacao.categoriaNome }}</td>
-        <!-- Novos campos -->
         <td>{{ transacao.responsavel }}</td>
         <td>{{ transacao.tipoPagamento }}</td>
         <td>{{ transacao.valor | number: '1.2-2' }}</td>
-        <td>{{ transacao.tipo}} </td>
+        <td>{{ transacao.tipo }}</td>
         <td>
           <button class="btn btn-secondary" (click)="editarTransacao(transacao)">Editar</button>
           <button class="btn btn-danger" (click)="deletarTransacao(transacao.transacaoID)">Excluir</button>

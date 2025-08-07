@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from 'src/environments/environment.prod'; // <-- Importação do arquivo de ambiente
+import { environment } from 'src/environments/environment.prod';
 import { TransacaoDetalhes, PaginatedResult } from '../../models/transacao.model';
-import { NotificationService } from '../../services/notification.service'; // Importa o serviço de notificação
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-transaction-list',
@@ -13,19 +13,47 @@ import { NotificationService } from '../../services/notification.service'; // Im
 export class TransactionListComponent implements OnInit {
 
   public transacoes: TransacaoDetalhes[] = [];
+  public categorias: any[] = []; // Adiciona array para categorias
   public currentPage = 1;
   public totalPages = 1;
+
+  // Variáveis para os filtros
   public filtroDataInicio: string = '';
   public filtroDataFim: string = '';
+  public filtroResponsavel: string = 'Todos';
+  public filtroTipoPagamento: string = 'Todos';
+  public filtroTipo: string = 'Todos';
+  public filtroCategoria: string = 'Todos';
+  
+  // Novo array de responsáveis para o dropdown
+  public responsaveis: string[] = [
+    "Gabriel",
+    "Ana Carolina",
+    "Viviene",
+    "Miguel",
+    "Florindo",
+    "Valentina",
+    "Cecilia",
+    "Matteo",
+    "Lucca"
+  ];
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private notification: NotificationService // Injeta o serviço
+    private notification: NotificationService
   ) { }
 
   ngOnInit(): void {
+    this.carregarCategorias(); // Carrega as categorias ao iniciar
     this.carregarTransacoes(this.currentPage);
+  }
+  
+  carregarCategorias(): void {
+    this.http.get<any[]>(`${environment.apiUrl}/categorias`).subscribe({
+      next: (data) => { this.categorias = data; },
+      error: (err) => { console.error('Erro ao carregar categorias', err); }
+    });
   }
 
   carregarTransacoes(page: number): void {
@@ -39,6 +67,20 @@ export class TransactionListComponent implements OnInit {
     if (this.filtroDataFim) {
       params = params.append('dataFim', this.filtroDataFim);
     }
+    // Adicionando os novos filtros à requisição
+    if (this.filtroTipo && this.filtroTipo !== 'Todos') {
+      params = params.append('tipo', this.filtroTipo);
+    }
+    if (this.filtroTipoPagamento && this.filtroTipoPagamento !== 'Todos') {
+      params = params.append('tipoPagamento', this.filtroTipoPagamento);
+    }
+    if (this.filtroResponsavel && this.filtroResponsavel !== 'Todos') {
+      params = params.append('responsavel', this.filtroResponsavel);
+    }
+    if (this.filtroCategoria && this.filtroCategoria !== 'Todos') {
+      params = params.append('categoriaID', this.filtroCategoria);
+    }
+
 
     this.http.get<PaginatedResult<TransacaoDetalhes>>(`${environment.apiUrl}/transacoes`, { params }).subscribe({
       next: (data) => {
@@ -53,7 +95,7 @@ export class TransactionListComponent implements OnInit {
   }
 
   aplicarFiltros(): void {
-    this.currentPage = 1; // Volta para a primeira página ao aplicar filtros
+    this.currentPage = 1;
     this.carregarTransacoes(this.currentPage);
   }
 

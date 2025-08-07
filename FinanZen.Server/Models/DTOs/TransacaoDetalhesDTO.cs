@@ -10,5 +10,8 @@
         public int CategoriaID { get; set; }
         public string? CategoriaNome { get; set; }
         public string? Tipo { get; set; }
+
+        public string TipoPagamento { get; set; } = string.Empty;
+        public string Responsavel { get; set; } = string.Empty;
     }
 }

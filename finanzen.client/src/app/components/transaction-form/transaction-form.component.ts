@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { NotificationService } from '../../services/notification.service'; // IMPORTAR
+import { NotificationService } from '../../services/notification.service';
+import { environment } from 'src/environments/environment.prod'; // <-- Importação do ambiente
 
 @Component({
   selector: 'app-transaction-form',
@@ -13,13 +14,11 @@ export class TransactionFormComponent implements OnInit {
   model: any = {};
   isEditMode = false;
 
-  // INJETAR O NOVO SERVIÇO
   constructor(
     private http: HttpClient, 
     private router: Router,
     private notification: NotificationService
   ) {
-    // ... (lógica do construtor continua a mesma)
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { transacaoData: any };
     if (state?.transacaoData) {
@@ -37,29 +36,32 @@ export class TransactionFormComponent implements OnInit {
   }
 
   carregarCategorias(): void {
-    this.http.get<any[]>('/api/categorias').subscribe({
+    // CORREÇÃO: Usando a URL completa do ambiente
+    this.http.get<any[]>(`${environment.apiUrl}/categorias`).subscribe({
       next: (data) => { this.categorias = data; },
-      error: (err) => { this.notification.showError('Falha ao carregar categorias.'); } // USAR O SERVIÇO
+      error: (err) => { this.notification.showError('Falha ao carregar categorias.'); }
     });
   }
 
   onSubmit() {
     if (this.isEditMode) {
-      this.http.put(`/api/transacoes/${this.model.transacaoID}`, this.model).subscribe({
+      // CORREÇÃO: Usando a URL completa do ambiente
+      this.http.put(`${environment.apiUrl}/transacoes/${this.model.transacaoID}`, this.model).subscribe({
         next: () => {
-          this.notification.showSuccess('Transação atualizada com sucesso!'); // USAR O SERVIÇO
+          this.notification.showSuccess('Transação atualizada com sucesso!');
           this.router.navigate(['/minhas-transacoes']);
         },
-        error: (err) => this.notification.showError('Falha ao atualizar a transação.') // USAR O SERVIÇO
+        error: (err) => this.notification.showError('Falha ao atualizar a transação.')
       });
     } else {
       const payload = { ...this.model, usuarioId: 1 };
-      this.http.post('/api/transacoes', payload).subscribe({
+      // CORREÇÃO: Usando a URL completa do ambiente
+      this.http.post(`${environment.apiUrl}/transacoes`, payload).subscribe({
         next: () => {
-          this.notification.showSuccess('Transação salva com sucesso!'); // USAR O SERVIÇO
+          this.notification.showSuccess('Transação salva com sucesso!');
           this.router.navigate(['/minhas-transacoes']);
         },
-        error: (err) => this.notification.showError('Erro ao salvar transação.') // USAR O SERVIÇO
+        error: (err) => this.notification.showError('Erro ao salvar transação.')
       });
     }
   }

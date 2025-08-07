@@ -1,11 +1,51 @@
-.pagination-controls {
+/* Adicione esta classe ao seu arquivo transaction-list.component.css */
+
+.filters-grid {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
+  flex-direction: column;
   gap: 1rem;
+  padding: 1.5rem;
 }
 
-.pagination-controls span {
-  font-weight: 500;
+.filter-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Permite que os grupos se expandam igualmente */
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.filter-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Estilos para a tabela, se necessário */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--cor-borda);
+  text-align: left;
 }

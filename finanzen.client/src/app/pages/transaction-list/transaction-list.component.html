@@ -29,7 +29,7 @@
         <th>Descrição</th>
         <th>Categoria</th>
         <th>Valor (R$)</th>
-        <th> </th>
+        <th>Tipo</th>
       </tr>
     </thead>
     <tbody>
@@ -42,6 +42,7 @@
         <td>{{ transacao.descricao }}</td>
         <td>{{ transacao.categoriaNome }}</td>
         <td>{{ transacao.valor | number: '1.2-2' }}</td>
+        <td>{{ transacao.tipo}} </td>
         <td>
           <button class="btn btn-secondary" (click)="editarTransacao(transacao)">Editar</button>
           <button class="btn btn-danger" (click)="deletarTransacao(transacao.transacaoID)">Excluir</button>

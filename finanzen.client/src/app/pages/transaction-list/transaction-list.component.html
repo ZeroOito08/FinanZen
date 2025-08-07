@@ -1,26 +1,19 @@
 <div class="list-container">
   <h2>Minhas Transações</h2>
 
-  <div class="list-container">
-
-
   <div class="filter-container">
-   <div class="form-wrapper glass-card">
-    <div class="form-group">
-      <label for="dataInicio">De:</label>
-      <input type="date" id="dataInicio" [(ngModel)]="filtroDataInicio">
+    <div class="form-wrapper glass-card">
+      <div class="form-group">
+        <label for="dataInicio">De:</label>
+        <input type="date" id="dataInicio" [(ngModel)]="filtroDataInicio">
+      </div>
+      <div class="form-group">
+        <label for="dataFim">Até:</label>
+        <input type="date" id="dataFim" [(ngModel)]="filtroDataFim">
+      </div>
+      <button class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
     </div>
-    <div class="form-group">
-      <label for="dataFim">Até:</label>
-      <input type="date" id="dataFim" [(ngModel)]="filtroDataFim">
-    </div>
-    <button class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
-   </div>
   </div>
-    <table>
-    </table>
-  </div>
-
 
   <table>
     <thead>
@@ -28,19 +21,26 @@
         <th>Data</th>
         <th>Descrição</th>
         <th>Categoria</th>
+        <!-- Novos campos -->
+        <th>Responsável</th>
+        <th>Tipo de Pagamento</th>
         <th>Valor (R$)</th>
         <th>Tipo</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngIf="transacoes.length === 0">
-        <td colspan="5">Nenhuma transação encontrada.</td>
+        <td colspan="7">Nenhuma transação encontrada.</td>
       </tr>
 
       <tr *ngFor="let transacao of transacoes">
         <td>{{ transacao.data | date: 'dd/MM/yyyy' }}</td>
         <td>{{ transacao.descricao }}</td>
         <td>{{ transacao.categoriaNome }}</td>
+        <!-- Novos campos -->
+        <td>{{ transacao.responsavel }}</td>
+        <td>{{ transacao.tipoPagamento }}</td>
         <td>{{ transacao.valor | number: '1.2-2' }}</td>
         <td>{{ transacao.tipo}} </td>
         <td>
@@ -58,5 +58,5 @@
     <button class="btn" (click)="proximaPagina()" [disabled]="currentPage === totalPages">
       Próxima
     </button>
-</div>
+  </div>
 </div>

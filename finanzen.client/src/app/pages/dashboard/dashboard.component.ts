@@ -62,8 +62,8 @@ export class DashboardComponent implements OnInit {
     // Usa a variável de ambiente para a URL
     this.http.get<any[]>(`${environment.apiUrl}/dashboard/despesas-por-categoria`).subscribe({
       next: (data) => {
-        this.pieChartData.labels = data.map(item => item.categoria);
-        this.pieChartData.datasets[0].data = data.map(item => item.total);
+        this.pieChartData.labels = data.map(item => item.categoria);
+        this.pieChartData.datasets[0].data = data.map(item => item.total);
       },
       error: (err) => { console.error('Erro ao carregar dados do gráfico de pizza', err); }
     });

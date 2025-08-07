@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { NotificationService } from '../../services/notification.service'; // IMPORTAR
+import { NotificationService } from '../../services/notification.service';
+import { environment } from 'src/environments/environment.prod'; // <-- Importação do ambiente
 
 @Component({
   selector: 'app-register',
@@ -11,7 +12,6 @@ import { NotificationService } from '../../services/notification.service'; // IM
 export class RegisterComponent {
   registerModel: any = {};
 
-  // INJETAR O NOVO SERVIÇO
   constructor(
     private http: HttpClient, 
     private router: Router,
@@ -25,13 +25,14 @@ export class RegisterComponent {
       senha: this.registerModel.senha
     };
 
-    this.http.post('/api/usuarios', payload).subscribe({
+    // CORREÇÃO: Usando a URL completa do ambiente
+    this.http.post(`${environment.apiUrl}/usuarios`, payload).subscribe({
       next: (response) => {
-        this.notification.showSuccess('Usuário cadastrado com sucesso! Por favor, faça o login.'); // USAR O SERVIÇO
+        this.notification.showSuccess('Usuário cadastrado com sucesso! Por favor, faça o login.');
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        this.notification.showError('Ocorreu um erro ao tentar cadastrar.'); // USAR O SERVIÇO
+        this.notification.showError('Ocorreu um erro ao tentar cadastrar.');
       }
     });
   }

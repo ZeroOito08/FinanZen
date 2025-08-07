@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NotificationService } from '../../services/notification.service';
+import { environment } from 'src/environments/environment.prod'; // <-- Importação do ambiente
 
 export interface OrcamentoDetalhes {
   categoriaID: number;
@@ -28,7 +29,8 @@ export class BudgetManagementComponent implements OnInit {
   }
 
   carregarOrcamentos(): void {
-    this.http.get<OrcamentoDetalhes[]>('/api/orcamentos').subscribe({
+    // CORREÇÃO: Usando a URL completa do ambiente
+    this.http.get<OrcamentoDetalhes[]>(`${environment.apiUrl}/orcamentos`).subscribe({
       next: (data) => {
         this.orcamentos = data;
       },

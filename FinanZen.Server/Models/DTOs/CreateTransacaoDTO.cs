@@ -7,5 +7,8 @@
         public DateOnly Data { get; set; }
         public int UsuarioID { get; set; }
         public int CategoriaID { get; set; }
+        // Novos campos
+        public string TipoPagamento { get; set; } = "Dinheiro";
+        public string Responsavel { get; set; } = "Gabriel";
     }
 }

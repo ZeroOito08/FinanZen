@@ -31,5 +31,10 @@ namespace FinanZen.Server.Models
         // Propriedades de Navegação
         public virtual Usuario? Usuario { get; set; }
         public virtual Categoria? Categoria { get; set; }
+
+        // Novos campos
+        public string TipoPagamento { get; set; } = "Dinheiro"; // Pode ser Pix, Cartão Debito, Cartão Crédito, Dinheiro
+        public string Responsavel { get; set; } = "Gabriel"; // Nome do responsável pela transação
+
     }
 }

@@ -1,7 +1,5 @@
 // src/app/models/transacao.model.ts
 export interface TransacaoDetalhes {
-tipoPagamento: any;
-responsavel: any;
     transacaoID: number;
     descricao: string;
     valor: number;
@@ -9,6 +7,8 @@ responsavel: any;
     categoriaID: number;
     categoriaNome?: string;
     tipo?: 'Receita' | 'Despesa';
+    tipoPagamento: string;
+    responsavel: string;
 }
 
 export interface PaginatedResult<T> {

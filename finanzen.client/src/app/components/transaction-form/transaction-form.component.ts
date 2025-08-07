@@ -1,8 +1,10 @@
+// C:\Projetos\FinanZen\finanzen.client\src\app\components\transaction-form\transaction-form.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
-import { environment } from 'src/environments/environment.prod'; // <-- Importação do ambiente
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-transaction-form',
@@ -14,8 +16,21 @@ export class TransactionFormComponent implements OnInit {
   model: any = {};
   isEditMode = false;
 
+  // Novo array de responsáveis para o dropdown
+  public responsaveis: string[] = [
+    "Gabriel",
+    "Ana Carolina",
+    "Viviene",
+    "Miguel",
+    "Florindo",
+    "Valentina",
+    "Cecilia",
+    "Matteo",
+    "Lucca"
+  ];
+
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private router: Router,
     private notification: NotificationService
   ) {
@@ -32,11 +47,13 @@ export class TransactionFormComponent implements OnInit {
     this.carregarCategorias();
     if (!this.isEditMode) {
       this.model.data = new Date().toISOString().split('T')[0];
+      // Define valores padrão para os novos campos
+      this.model.tipoPagamento = this.model.tipoPagamento || 'Dinheiro';
+      this.model.responsavel = this.model.responsavel || 'Gabriel';
     }
   }
 
   carregarCategorias(): void {
-    // CORREÇÃO: Usando a URL completa do ambiente
     this.http.get<any[]>(`${environment.apiUrl}/categorias`).subscribe({
       next: (data) => { this.categorias = data; },
       error: (err) => { this.notification.showError('Falha ao carregar categorias.'); }
@@ -45,7 +62,6 @@ export class TransactionFormComponent implements OnInit {
 
   onSubmit() {
     if (this.isEditMode) {
-      // CORREÇÃO: Usando a URL completa do ambiente
       this.http.put(`${environment.apiUrl}/transacoes/${this.model.transacaoID}`, this.model).subscribe({
         next: () => {
           this.notification.showSuccess('Transação atualizada com sucesso!');
@@ -54,9 +70,8 @@ export class TransactionFormComponent implements OnInit {
         error: (err) => this.notification.showError('Falha ao atualizar a transação.')
       });
     } else {
-      const payload = { ...this.model, usuarioId: 1 };
-      // CORREÇÃO: Usando a URL completa do ambiente
-      this.http.post(`${environment.apiUrl}/transacoes`, payload).subscribe({
+      // O payload já está correto, pois estamos enviando o objeto 'model' completo
+      this.http.post(`${environment.apiUrl}/transacoes`, this.model).subscribe({
         next: () => {
           this.notification.showSuccess('Transação salva com sucesso!');
           this.router.navigate(['/minhas-transacoes']);

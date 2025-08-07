@@ -1,5 +1,6 @@
-<div class="form-wrapper glass-card">
+<!-- C:\Projetos\FinanZen\finanzen.client\src\app\components\transaction-form\transaction-form.component.html -->
 
+<div class="form-wrapper glass-card">
   <div class="form-header">
     <h2 *ngIf="isEditMode">Editar Transação</h2>
     <h2 *ngIf="!isEditMode">Nova Transação</h2>
@@ -29,6 +30,25 @@
         <option *ngFor="let categoria of categorias" [value]="categoria.categoriaID">
           {{ categoria.nome }}
         </option>
+      </select>
+    </div>
+
+    <!-- Novo campo: Tipo de Pagamento -->
+    <div class="form-group">
+      <label for="tipoPagamento">Tipo de Pagamento:</label>
+      <select id="tipoPagamento" name="tipoPagamento" [(ngModel)]="model.tipoPagamento" required>
+        <option value="Dinheiro">Dinheiro</option>
+        <option value="Cartao_Debito">Cartão de Débito</option>
+        <option value="Cartao_Credito">Cartão de Crédito</option>
+        <option value="PIX">PIX</option>
+      </select>
+    </div>
+
+    <!-- Novo campo: Responsável -->
+    <div class="form-group">
+      <label for="responsavel">Responsável:</label>
+      <select id="responsavel" name="responsavel" [(ngModel)]="model.responsavel" required>
+        <option *ngFor="let responsavel of responsaveis" [value]="responsavel">{{ responsavel }}</option>
       </select>
     </div>
     

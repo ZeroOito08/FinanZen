@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinanZen.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250712232834_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250807174840_AddPaymentAndResponsibleFieldsToTransacao2")]
+    partial class AddPaymentAndResponsibleFieldsToTransacao2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -188,6 +188,16 @@ namespace FinanZen.Server.Migrations
                     b.Property<int?>("FamiliaId")
                         .HasColumnType("integer")
                         .HasColumnName("familia_id");
+
+                    b.Property<string>("Responsavel")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("responsavel");
+
+                    b.Property<string>("TipoPagamento")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("tipo_pagamento");
 
                     b.Property<int>("UsuarioID")
                         .HasColumnType("integer")

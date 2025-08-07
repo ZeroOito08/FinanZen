@@ -38,7 +38,12 @@ export class TransactionFormComponent implements OnInit {
     const state = navigation?.extras.state as { transacaoData: any };
     if (state?.transacaoData) {
       this.isEditMode = true;
-      this.model = { ...state.transacaoData };
+      this.model = { 
+        ...state.transacaoData,
+        // Remove a lógica do "plano B", pois os dados já existem no banco
+        tipoPagamento: state.transacaoData.tipoPagamento,
+        responsavel: state.transacaoData.responsavel
+      };
       this.model.data = new Date(this.model.data).toISOString().split('T')[0];
     }
   }
@@ -47,9 +52,9 @@ export class TransactionFormComponent implements OnInit {
     this.carregarCategorias();
     if (!this.isEditMode) {
       this.model.data = new Date().toISOString().split('T')[0];
-      // Define valores padrão para os novos campos
-      this.model.tipoPagamento = this.model.tipoPagamento || 'Dinheiro';
-      this.model.responsavel = this.model.responsavel || 'Gabriel';
+      // Define valores padrão para os novos campos apenas para novas transações
+      this.model.tipoPagamento = 'Dinheiro';
+      this.model.responsavel = 'Gabriel';
     }
   }
 
@@ -70,7 +75,6 @@ export class TransactionFormComponent implements OnInit {
         error: (err) => this.notification.showError('Falha ao atualizar a transação.')
       });
     } else {
-      // O payload já está correto, pois estamos enviando o objeto 'model' completo
       this.http.post(`${environment.apiUrl}/transacoes`, this.model).subscribe({
         next: () => {
           this.notification.showSuccess('Transação salva com sucesso!');

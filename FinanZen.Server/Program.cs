@@ -454,10 +454,16 @@ app.MapPut("/api/transacoes/{id}", async (int id, CreateTransacaoDTO transacaoAt
     var userId = int.Parse(userIdClaim.Value);
     var transacao = await context.Transacoes.FirstOrDefaultAsync(t => t.TransacaoID == id && t.UsuarioID == userId);
     if (transacao is null) return Results.NotFound("Transação não encontrada.");
+
     transacao.Descricao = transacaoAtualizada.Descricao;
     transacao.Valor = transacaoAtualizada.Valor;
     transacao.Data = transacaoAtualizada.Data;
     transacao.CategoriaID = transacaoAtualizada.CategoriaID;
+
+    // ✅ CORREÇÃO FEITA AQUI: Atualiza os novos campos
+    transacao.TipoPagamento = transacaoAtualizada.TipoPagamento;
+    transacao.Responsavel = transacaoAtualizada.Responsavel;
+
     await context.SaveChangesAsync();
     return Results.Ok(transacao);
 }).RequireAuthorization();

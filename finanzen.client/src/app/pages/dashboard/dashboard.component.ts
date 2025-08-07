@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartOptions } from 'chart.js';
+import { environment } from 'src/environments/environment.prod';
 
 // 1. Definição da interface que estava faltando
 interface ResumoFinanceiro {
@@ -51,14 +52,14 @@ export class DashboardComponent implements OnInit {
   }
 
   carregarResumo(): void {
-    this.http.get<ResumoFinanceiro>('/api/dashboard/resumo').subscribe({
+    this.http.get<ResumoFinanceiro>('${environment.apiUrl}/api/dashboard/resumo').subscribe({
       next: (data) => { this.resumo = data; },
       error: (err) => { console.error('Erro ao carregar resumo financeiro', err); }
     });
   }
   
   carregarDadosGraficoPizza(): void {
-    this.http.get<any[]>('/api/dashboard/despesas-por-categoria').subscribe({
+    this.http.get<any[]>('${environment.apiUrl}/api/dashboard/despesas-por-categoria').subscribe({
       next: (data) => {
         this.pieChartData.labels = data.map(item => item.categoria);
         this.pieChartData.datasets[0].data = data.map(item => item.total);
@@ -71,7 +72,7 @@ export class DashboardComponent implements OnInit {
     this.periodoSelecionado = periodo;
     let params = new HttpParams().set('periodo', periodo );
 
-    this.http.get<any>('/api/dashboard/fluxo-caixa', { params }).subscribe({
+    this.http.get<any>('${environment.apiUrl}/api/dashboard/fluxo-caixa', { params }).subscribe({
       next: (data) => {
         this.lineChartData.labels = data.labels;
         this.lineChartData.datasets[0].data = data.saldos; // <-- Usa a nova linha de saldos

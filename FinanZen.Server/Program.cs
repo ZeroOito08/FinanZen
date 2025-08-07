@@ -401,14 +401,13 @@ app.MapGet("/api/transacoes", async (HttpContext httpContext, ApplicationDbConte
         query = query.Where(t => t.Categoria!.Tipo == tipo);
     }
 
-    // --- Nova Lógica de Paginação ---
     var totalItems = await query.CountAsync();
     var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
     var transacoesPaginadas = await query
         .OrderByDescending(t => t.Data)
-        .Skip((pageNumber - 1) * pageSize) // Pula os itens das páginas anteriores
-        .Take(pageSize) // Pega apenas os itens desta página
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
         .Include(t => t.Categoria)
         .Select(t => new TransacaoDetalhesDTO
         {
@@ -419,7 +418,11 @@ app.MapGet("/api/transacoes", async (HttpContext httpContext, ApplicationDbConte
             UsuarioID = t.UsuarioID,
             CategoriaID = t.CategoriaID,
             CategoriaNome = t.Categoria!.Nome,
-            Tipo = t.Categoria!.Tipo
+            Tipo = t.Categoria!.Tipo,
+
+            // ✅ CORREÇÃO FEITA AQUI: Mapeando os novos campos
+            TipoPagamento = t.TipoPagamento,
+            Responsavel = t.Responsavel
         })
         .ToListAsync();
 

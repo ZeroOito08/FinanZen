@@ -75,7 +75,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
-app.UseRouting(); // ✅ IMPORTANTE
+app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -419,10 +419,9 @@ app.MapGet("/api/transacoes", async (HttpContext httpContext, ApplicationDbConte
             CategoriaID = t.CategoriaID,
             CategoriaNome = t.Categoria!.Nome,
             Tipo = t.Categoria!.Tipo,
-
-            // ✅ CORREÇÃO FEITA AQUI: Mapeando os novos campos
             TipoPagamento = t.TipoPagamento,
-            Responsavel = t.Responsavel
+            Responsavel = t.Responsavel,
+            DataVencimento = t.DataVencimento
         })
         .ToListAsync();
 
@@ -441,7 +440,17 @@ app.MapPost("/api/transacoes", async (CreateTransacaoDTO transacaoDTO, HttpConte
     var userIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
     if (userIdClaim == null) return Results.Unauthorized();
     var userId = int.Parse(userIdClaim.Value);
-    var novaTransacao = new Transacao { Descricao = transacaoDTO.Descricao, Valor = transacaoDTO.Valor, Data = transacaoDTO.Data, UsuarioID = userId, CategoriaID = transacaoDTO.CategoriaID };
+    var novaTransacao = new Transacao
+    {
+        Descricao = transacaoDTO.Descricao,
+        Valor = transacaoDTO.Valor,
+        Data = transacaoDTO.Data,
+        UsuarioID = userId,
+        CategoriaID = transacaoDTO.CategoriaID,
+        TipoPagamento = transacaoDTO.TipoPagamento,
+        Responsavel = transacaoDTO.Responsavel,
+        DataVencimento = transacaoDTO.DataVencimento
+    };
     context.Transacoes.Add(novaTransacao);
     await context.SaveChangesAsync();
     return Results.Created($"/api/transacoes/{novaTransacao.TransacaoID}", novaTransacao);
@@ -459,10 +468,9 @@ app.MapPut("/api/transacoes/{id}", async (int id, CreateTransacaoDTO transacaoAt
     transacao.Valor = transacaoAtualizada.Valor;
     transacao.Data = transacaoAtualizada.Data;
     transacao.CategoriaID = transacaoAtualizada.CategoriaID;
-
-    // ✅ CORREÇÃO FEITA AQUI: Atualiza os novos campos
     transacao.TipoPagamento = transacaoAtualizada.TipoPagamento;
     transacao.Responsavel = transacaoAtualizada.Responsavel;
+    transacao.DataVencimento = transacaoAtualizada.DataVencimento;
 
     await context.SaveChangesAsync();
     return Results.Ok(transacao);

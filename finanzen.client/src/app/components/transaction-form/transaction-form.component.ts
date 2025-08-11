@@ -36,12 +36,16 @@ export class TransactionFormComponent implements OnInit {
     const state = navigation?.extras.state as { transacaoData: any };
     if (state?.transacaoData) {
       this.isEditMode = true;
-      this.model = {
+      this.model = { 
         ...state.transacaoData,
         tipoPagamento: state.transacaoData.tipoPagamento,
         responsavel: state.transacaoData.responsavel
       };
       this.model.data = new Date(this.model.data).toISOString().split('T')[0];
+      // Adiciona o campo dataVencimento para modo de edição
+      if (this.model.dataVencimento) {
+        this.model.dataVencimento = new Date(this.model.dataVencimento).toISOString().split('T')[0];
+      }
     }
   }
 
@@ -56,9 +60,8 @@ export class TransactionFormComponent implements OnInit {
 
   carregarCategorias(): void {
     this.http.get<any[]>(`${environment.apiUrl}/categorias`).subscribe({
-      next: (data) => {
-        this.categorias = data;
-        // Chama a lógica de verificação de categoria após os dados estarem disponíveis
+      next: (data) => { 
+        this.categorias = data; 
         if (this.isEditMode) {
           this.onCategoriaChange(this.model.categoriaId);
         }
@@ -66,7 +69,7 @@ export class TransactionFormComponent implements OnInit {
       error: (err) => { this.notification.showError('Falha ao carregar categorias.'); }
     });
   }
-
+    
   onCategoriaChange(categoriaId: number): void {
     const selectedCategoria = this.categorias.find(c => c.categoriaID === categoriaId);
     this.isContaMensalSelected = selectedCategoria?.nome === 'Conta Mensal';

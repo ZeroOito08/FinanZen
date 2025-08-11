@@ -1,6 +1,4 @@
-﻿// Nome do arquivo: Transacao.cs
-// Pasta: Models
-
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -36,5 +34,7 @@ namespace FinanZen.Server.Models
         public string TipoPagamento { get; set; } = "Dinheiro"; // Pode ser Pix, Cartão Debito, Cartão Crédito, Dinheiro
         public string Responsavel { get; set; } = "Gabriel"; // Nome do responsável pela transação
 
+        // Nova propriedade adicionada para a Data de Vencimento
+        public DateOnly? DataVencimento { get; set; } // O tipo foi alterado para DateOnly?
     }
 }

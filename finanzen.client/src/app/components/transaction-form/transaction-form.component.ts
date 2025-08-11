@@ -1,5 +1,3 @@
-// C:\Projetos\FinanZen\finanzen.client\src\app\components\transaction-form\transaction-form.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -15,8 +13,8 @@ export class TransactionFormComponent implements OnInit {
   public categorias: any[] = [];
   model: any = {};
   isEditMode = false;
+  isContaMensalSelected = false;
 
-  // Novo array de responsáveis para o dropdown
   public responsaveis: string[] = [
     "Gabriel",
     "Ana Carolina",
@@ -38,9 +36,8 @@ export class TransactionFormComponent implements OnInit {
     const state = navigation?.extras.state as { transacaoData: any };
     if (state?.transacaoData) {
       this.isEditMode = true;
-      this.model = { 
+      this.model = {
         ...state.transacaoData,
-        // Remove a lógica do "plano B", pois os dados já existem no banco
         tipoPagamento: state.transacaoData.tipoPagamento,
         responsavel: state.transacaoData.responsavel
       };
@@ -52,7 +49,6 @@ export class TransactionFormComponent implements OnInit {
     this.carregarCategorias();
     if (!this.isEditMode) {
       this.model.data = new Date().toISOString().split('T')[0];
-      // Define valores padrão para os novos campos apenas para novas transações
       this.model.tipoPagamento = 'Dinheiro';
       this.model.responsavel = 'Gabriel';
     }
@@ -60,9 +56,23 @@ export class TransactionFormComponent implements OnInit {
 
   carregarCategorias(): void {
     this.http.get<any[]>(`${environment.apiUrl}/categorias`).subscribe({
-      next: (data) => { this.categorias = data; },
+      next: (data) => {
+        this.categorias = data;
+        // Chama a lógica de verificação de categoria após os dados estarem disponíveis
+        if (this.isEditMode) {
+          this.onCategoriaChange(this.model.categoriaId);
+        }
+      },
       error: (err) => { this.notification.showError('Falha ao carregar categorias.'); }
     });
+  }
+
+  onCategoriaChange(categoriaId: number): void {
+    const selectedCategoria = this.categorias.find(c => c.categoriaID === categoriaId);
+    this.isContaMensalSelected = selectedCategoria?.nome === 'Conta Mensal';
+    if (!this.isContaMensalSelected) {
+      this.model.dataVencimento = null;
+    }
   }
 
   onSubmit() {

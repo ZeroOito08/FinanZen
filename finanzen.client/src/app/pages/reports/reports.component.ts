@@ -8,6 +8,8 @@ import html2canvas from 'html2canvas';
 
 // Adicionei a biblioteca FileSaver para facilitar o download do arquivo
 import { saveAs } from 'file-saver'; 
+// Importação da biblioteca xlsx
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-reports',
@@ -70,7 +72,40 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  // Nova função para exportar para XML
+  /**
+   * Nova função para exportar dados para um arquivo Excel (XLSX).
+   * Utiliza a biblioteca `xlsx` para converter um array de objetos em uma planilha.
+   */
+  public exportarParaXLS(): void {
+    // Mapeia os dados das transações para um formato mais amigável para a planilha
+    const dadosParaExportar = this.transacoes.map(transacao => ({
+      Data: new Date(transacao.data).toLocaleDateString('pt-BR'),
+      Descricao: transacao.descricao,
+      Categoria: transacao.categoriaNome,
+      // Adicionado o campo "Responsável" ao objeto de exportação
+      Responsavel: transacao.responsavel,
+      Valor: `${transacao.tipo === 'Receita' ? '+' : '-'} ${transacao.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`,
+      Tipo: transacao.tipo
+    }));
+
+    // Cria uma planilha a partir dos dados
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dadosParaExportar);
+    
+    // Cria um workbook e adiciona a planilha
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Relatório de Transações');
+
+    // Converte o workbook para um array buffer
+    const wbout: ArrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+    // Cria um Blob e salva o arquivo usando a biblioteca FileSaver
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    saveAs(blob, `relatorio-finan-zen_${new Date().toISOString().slice(0, 10)}.xlsx`);
+
+    this.notification.showSuccess('Relatório exportado com sucesso para Excel!');
+  }
+
+  // Nova função para exportar para XML (mantida do código anterior, mas com o nome corrigido)
   public exportarParaXML(): void {
     // Cria o documento XML a partir dos dados das transações
     let xmlString = '<?xml version="1.0" encoding="UTF-8"?>\n<transacoes>\n';

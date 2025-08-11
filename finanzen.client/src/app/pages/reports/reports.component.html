@@ -24,7 +24,11 @@
     <button class="btn btn-primary" (click)="aplicarFiltros()">Aplicar Filtros</button>
   </div>
   
-  <button class="btn btn-primary no-print" (click)="exportarParaPDF()">Exportar para PDF</button>
+  <div class="report-actions no-print">
+    <button class="btn btn-primary" (click)="exportarParaPDF()">Exportar para PDF</button>
+    <!-- Botão para exportar para XLS (Excel) -->
+    <button class="btn btn-success" (click)="exportarParaXLS()">Exportar para XLS</button>
+  </div>
 
   <div class="report-content" #reportContent>
     <table>
@@ -33,26 +37,29 @@
           <th>Data</th>
           <th>Descrição</th>
           <th>Categoria</th>
+          <!-- Nova coluna para o Responsável -->
+          <th>Responsável</th>
           <th class="align-right">Valor (R$)</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngIf="transacoes.length === 0">
-          <td colspan="4" style="text-align: center;">Nenhuma transação encontrada.</td>
+          <!-- Colspan ajustado para 5 para acomodar a nova coluna -->
+          <td colspan="5" style="text-align: center;">Nenhuma transação encontrada.</td>
         </tr>
         <tr *ngFor="let transacao of transacoes">
           <td>{{ transacao.data | date: 'dd/MM/yyyy' }}</td>
           <td>{{ transacao.descricao }}</td>
           <td>{{ transacao.categoriaNome }}</td>
+          <!-- Exibição do valor do Responsável -->
+          <td>{{ transacao.responsavel }}</td>
           <td class="align-right" [ngClass]="{'receita': transacao.tipo === 'Receita', 'despesa': transacao.tipo === 'Despesa'}">
-                <span *ngIf="transacao.tipo === 'Receita'">+</span>
-                <span *ngIf="transacao.tipo === 'Despesa'">-</span>
-                {{ transacao.valor | currency:'BRL' }}
+              <span *ngIf="transacao.tipo === 'Receita'">+</span>
+              <span *ngIf="transacao.tipo === 'Despesa'">-</span>
+              {{ transacao.valor | currency:'BRL' }}
           </td>
         </tr>
       </tbody>
-      <tfoot>
-        </tfoot>
     </table>
   </div>
 </div>

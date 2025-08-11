@@ -1,21 +1,10 @@
-:host {
-  display: block;
-}
+/* ... (estilos existentes) ... */
 
-.report-header {
-  border-bottom: 2px solid var(--cor-borda);
-  padding-bottom: 1rem;
+/* Nova classe para agrupar os botões de ação do relatório */
+.report-actions {
+  display: flex;
+  gap: 1rem;
   margin-bottom: 1.5rem;
-}
-
-.report-header h1 {
-  margin: 0;
-}
-
-.report-header p {
-  margin: 0.25rem 0 0;
-  font-size: 0.9em;
-  color: var(--text-secondary);
 }
 
 .no-print {
@@ -49,8 +38,6 @@ th {
   color: #dc3545; /* Vermelho para despesas */
 }
 
-/* ... (estilos existentes) ... */
-
 .filters-container {
   display: flex;
   gap: 1rem;
@@ -76,4 +63,18 @@ th {
   border-radius: 4px;
   background-color: var(--cor-fundo-secundario);
   color: var(--text-primary);
+}
+
+.btn-success {
+  background-color: #28a745; /* Verde para sucesso */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838;
 }

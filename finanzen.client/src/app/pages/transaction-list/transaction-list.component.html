@@ -3,60 +3,57 @@
 
   <div class="filter-container">
     <div class="filters-grid glass-card">
-      
-      <!-- Linha 1: De: e Até: alinhados à esquerda -->
-      <div class="filter-row">
-        <div class="form-group align-left">
-          <label for="dataInicio">De:</label>
-          <input type="date" id="dataInicio" [(ngModel)]="filtroDataInicio">
+      <div class="filter-grid-columns">
+        <div class="filter-column">
+          <div class="form-group">
+            <label for="dataInicio">De:</label>
+            <input type="date" id="dataInicio" [(ngModel)]="filtroDataInicio">
+          </div>
+          <div class="form-group">
+            <label for="dataFim">Até:</label>
+            <input type="date" id="dataFim" [(ngModel)]="filtroDataFim">
+          </div>
         </div>
-        <div class="form-group align-left">
-          <label for="dataFim">Até:</label>
-          <input type="date" id="dataFim" [(ngModel)]="filtroDataFim">
+        
+        <div class="filter-column">
+          <div class="form-group">
+            <label for="responsavel">Responsável:</label>
+            <select id="responsavel" [(ngModel)]="filtroResponsavel">
+              <option value="Todos">Todos</option>
+              <option *ngFor="let responsavel of responsaveis" [value]="responsavel">{{ responsavel }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tipoPagamento">Tipo de Pagamento:</label>
+            <select id="tipoPagamento" [(ngModel)]="filtroTipoPagamento">
+              <option value="Todos">Todos</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartao_Debito">Cartão de Débito</option>
+              <option value="Cartao_Credito">Cartão de Crédito</option>
+              <option value="PIX">PIX</option>
+            </select>
+          </div>
         </div>
-      </div>
-      
-      <!-- Linha 2: Responsável e Tipo de Pagamento alinhados ao centro -->
-      <div class="filter-row">
-        <div class="form-group align-center">
-          <label for="responsavel">Responsável:</label>
-          <select id="responsavel" [(ngModel)]="filtroResponsavel">
-            <option value="Todos">Todos</option>
-            <option *ngFor="let responsavel of responsaveis" [value]="responsavel">{{ responsavel }}</option>
-          </select>
-        </div>
-        <div class="form-group align-center">
-          <label for="tipoPagamento">Tipo de Pagamento:</label>
-          <select id="tipoPagamento" [(ngModel)]="filtroTipoPagamento">
-            <option value="Todos">Todos</option>
-            <option value="Dinheiro">Dinheiro</option>
-            <option value="Cartao_Debito">Cartão de Débito</option>
-            <option value="Cartao_Credito">Cartão de Crédito</option>
-            <option value="PIX">PIX</option>
-          </select>
-        </div>
-      </div>
 
-      <!-- Linha 3: Tipo e Categoria alinhados à direita -->
-      <div class="filter-row">
-        <div class="form-group align-right">
-          <label for="tipo">Tipo:</label>
-          <select id="tipo" [(ngModel)]="filtroTipo">
-            <option value="Todos">Todos</option>
-            <option value="Receita">Receita</option>
-            <option value="Despesa">Despesa</option>
-          </select>
-        </div>
-        <div class="form-group align-right">
-          <label for="categoria">Categoria:</label>
-          <select id="categoria" [(ngModel)]="filtroCategoria">
-            <option value="Todos">Todos</option>
-            <option *ngFor="let categoria of categorias" [value]="categoria.categoriaID">{{ categoria.nome }}</option>
-          </select>
+        <div class="filter-column">
+          <div class="form-group">
+            <label for="tipo">Tipo:</label>
+            <select id="tipo" [(ngModel)]="filtroTipo">
+              <option value="Todos">Todos</option>
+              <option value="Receita">Receita</option>
+              <option value="Despesa">Despesa</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="categoria">Categoria:</label>
+            <select id="categoria" [(ngModel)]="filtroCategoria">
+              <option value="Todos">Todos</option>
+              <option *ngFor="let categoria of categorias" [value]="categoria.categoriaID">{{ categoria.nome }}</option>
+            </select>
+          </div>
         </div>
       </div>
       
-      <!-- Botão de filtro centralizado -->
       <div class="filter-button-container">
         <button class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
       </div>
@@ -80,7 +77,6 @@
       <tr *ngIf="transacoes.length === 0">
         <td colspan="8">Nenhuma transação encontrada.</td>
       </tr>
-
       <tr *ngFor="let transacao of transacoes">
         <td>{{ transacao.data | date: 'dd/MM/yyyy' }}</td>
         <td>{{ transacao.descricao }}</td>

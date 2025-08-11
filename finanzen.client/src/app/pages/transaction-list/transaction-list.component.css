@@ -1,4 +1,4 @@
-/* Adicione esta classe ao seu arquivo transaction-list.component.css */
+/* Adicione estas novas classes ao seu arquivo .css */
 
 .filters-grid {
   display: flex;
@@ -7,30 +7,32 @@
   padding: 1.5rem;
 }
 
-.filter-row {
+.filter-grid-columns {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 2rem; /* Espaço maior entre as colunas */
+}
+
+.filter-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Espaço entre os campos da coluna */
+  flex-basis: 30%; /* Define a largura inicial de cada coluna */
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Permite que os grupos se expandam igualmente */
+  flex-grow: 1;
 }
 
-.align-left {
-  text-align: left;
+label {
+  margin-bottom: 0.5rem;
 }
 
-.align-center {
-  text-align: center;
-}
-
-.align-right {
-  text-align: right;
-}
+/* Os estilos existentes podem ser mantidos, mas as classes de alinhamento
+   (`align-left`, `align-center`, `align-right`) não serão mais necessárias
+   com esta nova estrutura. */
 
 .filter-button-container {
   display: flex;
@@ -42,6 +44,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 2rem;
 }
 
 th, td {

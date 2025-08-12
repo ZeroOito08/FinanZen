@@ -72,7 +72,7 @@ export class TransactionFormComponent implements OnInit {
     
   onCategoriaChange(categoriaId: number): void {
     const selectedCategoria = this.categorias.find(c => c.categoriaID === categoriaId);
-    this.isContaMensalSelected = selectedCategoria?.nome === 'Conta Mensal';
+    this.isContaMensalSelected = selectedCategoria?.nome?.trim().toLowerCase() === 'conta mensal';
     if (!this.isContaMensalSelected) {
       this.model.dataVencimento = null;
     }
